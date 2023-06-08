@@ -5,8 +5,8 @@ export function Atendimento(props) {
 
     const {paciente, chegou, horario} = props;
 
-    checkmark = require("../../../assets/checkmark.png");
-    xmark = require("../../../assets/xcross.jpg");
+    checkmark = require("../../assets/checkmark.png");
+    xmark = require("../../assets/xcross.jpg");
 
     return (   
         <View style={styles.container}>
