@@ -23,6 +23,7 @@ export function MainView(props) {
       },
       shouldReconnect: (closeEvent) => true,
       reconnectInterval: 100,
+      reconnectAttempts: 20000,
     }
   );
 
