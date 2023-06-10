@@ -11,25 +11,21 @@ export function MainView(props) {
 
   const userId = props;
 
-  const connectWebSocket = () => {
-    const { lastJsonMessage, sendMessage } = useWebSocket(
-      "ws://192.168.2.101:8080/websocket-endpoint",
-      {
-        onOpen: () => sendMessage("1"),
-        onMessage: (message) => {
-          if (message.data === "S") fetchAtendimentos();
-        },
-        onError: (event) => {
-          console.error(event);
-        },
-        shouldReconnect: (closeEvent) => true,
-        reconnectInterval: 100,
-        reconnectAttempts: 20000,
-      }
-    );
-
-    return { lastJsonMessage, sendMessage };
-  };
+  const { lastJsonMessage, sendMessage } = useWebSocket(
+    "ws://192.168.2.101:8080/websocket-endpoint",
+    {
+      onOpen: () => sendMessage("1"),
+      onMessage: (message) => {
+        if (message.data === "S") fetchAtendimentos();
+      },
+      onError: (event) => {
+        console.error(event);
+      },
+      shouldReconnect: (closeEvent) => true,
+      reconnectInterval: 100,
+      reconnectAttempts: 20000,
+    }
+  );
 
   const [atendimentos, setAtendimentos] = useState([]);
   const [notificacao, setNotificacao] = useState(1);
@@ -104,15 +100,6 @@ export function MainView(props) {
     });
   }, []);
 
-  const getAtendimentosToday = () => {
-    fetchAtendimentos();
-    const { sendMessage } = connectWebSocket();
-
-    return () => {
-      sendMessage("1");
-    };
-  };
-
   useEffect(() => {
     fetchAtendimentos();
   }, []);
@@ -123,10 +110,9 @@ export function MainView(props) {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={getAtendimentosToday()} // Call the function to reconnect WebSocket
+            onRefresh={() => fetchAtendimentos()}
           />
         }
-        onScroll={getAtendimentosToday()} // Call the function to reconnect WebSocket
       >
         <View style={styles.container}>
           {atendimentos.map((atendimento, index) => (
