@@ -3,6 +3,7 @@ import { MainView } from "./src/components/viewselect";
 import { View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { Login } from "./src/components/login";
+import { Cadastrar } from "./src/components/cadastrar";
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -11,9 +12,17 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
+  const [cadastrar, setCadastrar] = useState(false);
+
+  const deslogFunction = () => {
+    setLoggedIn(false);
+  }
+
   const renderContent = () => {
-    if (loggedIn) {
-      return <MainView userId={userId} />;
+    if (loggedIn && !cadastrar) {
+      return <MainView userId={userId} deslogFunction={deslogFunction} setCadastrar={setCadastrar}/>;
+    } else if(loggedIn && cadastrar) {
+      return <Cadastrar setCadastrar={setCadastrar} />
     } else {
       return (
         <Login
@@ -31,7 +40,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {renderContent()}
-      <StatusBar style="auto" />
+      <StatusBar  />
     </View>
   );
 }
@@ -40,7 +49,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
     justifyContent: "center",
   },
 });
