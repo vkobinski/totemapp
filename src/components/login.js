@@ -1,8 +1,8 @@
 import axios from "axios";
-import { StyleSheet, View, Text, TextInput, Button, Image } from "react-native";
+import { StyleSheet, View, Text, TextInput, Button, Image, Alert } from "react-native";
 import { useEffect, useState } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import utils from "../singletons/Utils"
 
 export function Login(props) {
   const { setLoggedIn, setUserId, password, setPassword, email, setEmail } =
@@ -30,14 +30,17 @@ export function Login(props) {
     await AsyncStorage.setItem("user", data.toString());
   };
 
-  const onLogin = () => {
-    axios
-      .postForm("http://192.168.2.101:8080/api/v1/usuario/login", {
-        senha: password,
-        email: email,
+  const onLogin = async () => {
+
+
+     await axios
+      .postForm(utils.getData("/api/v1/usuario/login"), {
+        senha: password.trim(),
+        email: email.trim(),
       })
       .then(async (response) => {
         if (response.status === 401) {
+
           setShowError(true);
           setTimeout(() => {
             setShowError(false);
@@ -77,6 +80,7 @@ export function Login(props) {
         </View>
         <View style={styles.labeledInput}>
           <TextInput
+            secureTextEntry={true}
             style={[styles.textInput, styles.text]}
             value={password}
             onChangeText={setPassword}
@@ -85,7 +89,7 @@ export function Login(props) {
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            color={"#4C042C"}
+            color={"#0864ac"}
             style={styles.button}
             title="Entrar"
             onPress={onLogin}
@@ -109,7 +113,7 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#5E4B56",
+    color: "#0864ac",
     alignSelf: "center",
   },
   imagem: {
@@ -128,7 +132,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 350,
     borderBottomRightRadius: 350,
     overflow: "hidden",
-    backgroundColor: "#4C042C",
+    backgroundColor: "#0864ac",
   },
   formContainer: {
     marginTop: 100,

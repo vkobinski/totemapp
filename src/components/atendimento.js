@@ -1,6 +1,6 @@
 import { BlurView } from "@react-native-community/blur";
-import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import React, { useRef } from "react";
+import { View, Text, StyleSheet, Image, PanResponder} from "react-native";
 import { TouchableOpacity } from "react-native";
 
 export function Atendimento(props) {
@@ -10,9 +10,10 @@ export function Atendimento(props) {
 
 
   const foto = () => {
-    if(fotoPaciente === null){
+    if(fotoPaciente === undefined || fotoPaciente === null){
       return user;
     }
+
 
     return {uri: fotoPaciente};
   };
@@ -20,7 +21,7 @@ export function Atendimento(props) {
   return (
     <View style={styles.container}>
       <View style={styles.container2}>
-        <TouchableOpacity onPressIn={() => verPaciente(foto())} onPressOut={() => pararVerPaciente(user)}>
+        <TouchableOpacity onPress={() => verPaciente(foto())} >
           <Image style={styles.imagem} source={foto()}  />
         </TouchableOpacity>
         <View>
@@ -49,7 +50,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignItems: "center",
-    borderBottomColor: "#4C042C",
+    borderBottomColor: "#ffb40c",
+
     borderBottomWidth: 1,
     zIndex: 0,
   },
@@ -69,12 +71,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#D00D0B",
   },
   text: {
-    color: "#4C042C",
+    color: "#000",
     fontSize: 17,
   },
   horario: {
     marginTop: 1,
-    color: "#4C042C",
+    color: "#000",
     fontSize: 11,
   },
   imagem: {

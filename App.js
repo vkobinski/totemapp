@@ -4,6 +4,8 @@ import { View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { Login } from "./src/components/login";
 import { Cadastrar } from "./src/components/cadastrar";
+import { CadastrarPaciente } from "./src/components/cadastrar-paciente";
+import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -13,16 +15,26 @@ export default function App() {
   const [email, setEmail] = useState("");
 
   const [cadastrar, setCadastrar] = useState(false);
+  const [cadastrarPaciente, setCadastrarPaciente] = useState(false);
 
   const deslogFunction = () => {
     setLoggedIn(false);
-  }
+  };
 
   const renderContent = () => {
-    if (loggedIn && !cadastrar) {
-      return <MainView userId={userId} deslogFunction={deslogFunction} setCadastrar={setCadastrar}/>;
-    } else if(loggedIn && cadastrar) {
-      return <Cadastrar setCadastrar={setCadastrar} />
+    if (loggedIn && !cadastrar && !cadastrarPaciente) {
+      return (
+        <MainView
+          userId={userId}
+          deslogFunction={deslogFunction}
+          setCadastrar={setCadastrar}
+          setCadastrarPaciente={setCadastrarPaciente}
+        />
+      );
+    } else if (loggedIn && cadastrarPaciente) {
+      return <CadastrarPaciente setCadastrarPaciente={setCadastrarPaciente} />;
+    } else if (loggedIn && cadastrar) {
+      return <Cadastrar setCadastrar={setCadastrar} />;
     } else {
       return (
         <Login
@@ -38,10 +50,12 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      {renderContent()}
-      <StatusBar  />
-    </View>
+    <AutocompleteDropdownContextProvider>
+      <View style={styles.container}>
+        {renderContent()}
+        <StatusBar />
+      </View>
+    </AutocompleteDropdownContextProvider>
   );
 }
 

@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "totem",
+    "name": "Totem",
     "slug": "totem",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,7 +16,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vkobinski.totem"
+      "bundleIdentifier": "com.kodev.uptotem",
+      "buildNumber": "14",
+      "infoPlist": {
+        "NSAppTransportSecurity": "Esse app usa requisições HTTP.",
+        "NSAllowsArbitraryLoads": "Requisições HTTP"
+      }
     },
     "android": {
       "softwareKeyboardLayoutMode": "pan",
@@ -24,13 +29,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.vkobinski.totem"
+      "package": "com.kodev.uptotem"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@notifee/react-native",
       [
         "expo-build-properties",
         {
@@ -40,7 +44,9 @@
             "buildToolsVersion": "33.0.0"
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "13.0",
+            "useFrameworks": "static"
+
           }
         }
       ]

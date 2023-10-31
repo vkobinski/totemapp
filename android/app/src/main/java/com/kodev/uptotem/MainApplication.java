@@ -1,4 +1,4 @@
-package com.vkobinski.totem;
+package com.kodev.uptotem;
 
 import android.app.Application;
 import android.content.res.Configuration;

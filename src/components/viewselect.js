@@ -12,18 +12,22 @@ import { Atendimento } from "./atendimento.js";
 import useWebSocket from "react-use-websocket";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import BackgroundService from "react-native-background-actions";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import notifee, { AndroidImportance, EventType } from "@notifee/react-native";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
 import { Inter_700Bold } from "@expo-google-fonts/inter";
+import DatePicker from "react-native-date-picker";
 import { BlurView } from "@react-native-community/blur";
+import utils from "../singletons/Utils.js";
 
 export function MainView(props) {
   const userId = props["userId"];
   const deslogFunction = props["deslogFunction"];
   const setCadastrar = props["setCadastrar"];
+  const setCadastrarPaciente = props["setCadastrarPaciente"];
 
   let [fontsLoaded] = useFonts({
     Inter_700Bold,
@@ -35,36 +39,56 @@ export function MainView(props) {
   };
 
   const deslogarImagem = require("../../assets/deslogar.png");
-  const addUser = require("../../assets/add-user.png");
-
-  const { lastJsonMessage, sendMessage } = useWebSocket(
-    "ws://192.168.2.101:8080/websocket-endpoint",
-    {
-      onOpen: () => {
-        sendMessage("1");
-        fetchAtendimentos();
-      },
-      onMessage: (message) => {
-        if (message.data === "S") fetchAtendimentos();
-      },
-      onError: (event) => {
-        console.error(event);
-      },
-      shouldReconnect: (closeEvent) => true,
-      reconnectInterval: 100,
-      reconnectAttempts: 20000,
-    }
-  );
+  const addUser = require("../../assets/cadastro.png");
+  const cadastrarPacienteImagem = require("../../assets/add-user.png");
+  const setaEsquerda = require("../../assets/seta-esquerda-2.png");
+  const setaDireita = require("../../assets/seta-direita.png");
 
   const [atendimentos, setAtendimentos] = useState([]);
   const [notificacao, setNotificacao] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [imageToShow, setImageToShow] = useState(null);
+  const [openDate, setOpenDate] = useState(false);
+  const [dayToShow, setDayToShow] = useState(new Date());
+
+  const checkSendNotification = () => {
+    axios
+      .postForm(utils.getData("/api/v1/atendimento/search-by-day"), {
+        userId: userId,
+        day: getDayToShow(),
+      })
+      .then((response) => {
+        response.data.map((atendimento) => {
+          for (let i = 0; i < atendimentos.length; i++) {
+            if (
+              atendimentos[i]["atendimentoId"] === atendimento["atendimentoId"]
+            ) {
+              if (
+                atendimentos[i]["chegou"] !== atendimento["chegou"] &&
+                atendimento["chegou"] === true
+              ) {
+                displayNotification(
+                  atendimento["paciente"]["nomeCompleto"],
+                  formattedTime
+                );
+              }
+            }
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   const fetchAtendimentos = () => {
+    setRefreshing(true);
     axios
-      .get("http://192.168.2.101:8080/api/v1/atendimento/" + userId)
+      .postForm(utils.getData("/api/v1/atendimento/search-by-day"), {
+        userId: userId,
+        day: getDayToShow(),
+      })
       .then((response) => {
         const atendimentosAntes = response.data.map((atendimento) => {
           const dateTime = new Date(atendimento.dataAtendimento);
@@ -89,13 +113,17 @@ export function MainView(props) {
             }
           }
 
+          const foto =
+            atendimento.fotoPaciente === null
+              ? null
+              : `data:image/jpeg;base64,${atendimento.fotoPaciente}`;
+
+          delete atendimento["fotoPaciente"];
+
           return {
             ...atendimento,
+            fotoPaciente: foto,
             dataAtendimento: formattedTime,
-            fotoPaciente:
-              atendimento.fotoPaciente === null
-                ? null
-                : `data:image/jpeg;base64,${atendimento.fotoPaciente}`,
           };
         });
 
@@ -107,9 +135,97 @@ export function MainView(props) {
       });
   };
 
+  const aumentarDia = async () => {
+    dataMostrar = new Date(dayToShow);
+    dataMostrar.setDate(dayToShow.getDate() + 1);
+    setDayToShow(dataMostrar);
+  };
+
+  const diminuirDia = async () => {
+    dataMostrar = new Date(dayToShow);
+    dataMostrar.setDate(dayToShow.getDate() - 1);
+    setDayToShow(dataMostrar);
+  };
+
+  useEffect(() => {
+    fetchAtendimentos();
+  }, [dayToShow]);
+
+  const checkNotified = () => {
+    axios
+      .postForm(utils.getData("/api/v1/atendimento/not-notified"), {
+        userId: userId,
+      })
+      .then((response) => {
+        console.log(response.data);
+        if (response.data == "S") checkSendNotification();
+      });
+  };
+
+  const sleep = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
+
+  const veryIntensiveTask = async () => {
+    await new Promise(async (resolve) => {
+      for (let i = 0; BackgroundService.isRunning(); i++) {
+        checkNotified();
+        await sleep(10000);
+      }
+    });
+  };
+
+  const options = {
+    taskName: "Check new Arrived",
+    taskTitle: "Arrived",
+    taskDesc: "Check if new patients have been arrived",
+    taskIcon: {
+      name: "ic_launcher",
+      type: "mipmap",
+    },
+    color: "#ff00ff",
+    parameters: {
+      delay: 10000,
+    },
+  };
+
+  useEffect(() => {
+    async function startBackground() {
+      await BackgroundService.start(veryIntensiveTask, options);
+    }
+
+    startBackground();
+  }, []);
+
+  const { lastJsonMessage, sendMessage } = useWebSocket(
+    utils.getDataWs("/websocket-endpoint"),
+    {
+      onOpen: () => {
+        sendMessage("1");
+        fetchAtendimentos();
+      },
+      onMessage: (message) => {
+        if (message.data === "S") fetchAtendimentos();
+      },
+      onError: (event) => {
+        console.error(event);
+      },
+      shouldReconnect: (closeEvent) => true,
+      reconnectInterval: 1000,
+      reconnectAttempts: 20000,
+    }
+  );
+
   async function displayNotification(nome, horario) {
     if (Platform.OS === "ios") {
       await notifee.requestPermission();
+
+      await notifee.displayNotification({
+        id: toString(notificacao),
+        title: "Paciente Chegou!",
+        body: `Paciente ${nome} chegou para o atendimento de ${horario}.`,
+      });
+
+      setNotificacao(notificacao + 1);
+      return;
     }
 
     const channelId = await notifee.createChannel({
@@ -137,10 +253,6 @@ export function MainView(props) {
     });
   }, []);
 
-  useEffect(() => {
-    fetchAtendimentos();
-  }, []);
-
   const verPaciente = (novaImagem) => {
     setShowImage(true);
     setImageToShow(novaImagem);
@@ -151,12 +263,28 @@ export function MainView(props) {
     setShowImage(novaImagem);
   };
 
+  const getDayToShow = () => {
+    let mm = dayToShow.getMonth() + 1; // Months start at 0!
+    let dd = dayToShow.getDate();
+
+    if (dd < 10) dd = "0" + dd;
+    if (mm < 10) mm = "0" + mm;
+
+    return dd + "/" + mm;
+  };
+
+  const user = require("../../assets/user.png");
+
   return (
     <SafeAreaProvider>
       {showImage === true ? (
         <>
           <Image style={styles.pacienteImagem} source={imageToShow} />
-          <BlurView style={styles.blur} blurType="light" />
+          <BlurView
+            style={styles.blur}
+            blurType="light"
+            onTouchStart={() => pararVerPaciente(user)}
+          />
         </>
       ) : null}
       <View style={styles.circle}>
@@ -171,9 +299,43 @@ export function MainView(props) {
         }
         style={styles.scrollview}
       >
-        <Text style={[styles.texto, { fontFamily: "Inter_700Bold" }]}>
-          Atendimentos Hoje
-        </Text>
+        <View style={styles.botoesTitulo}>
+          <TouchableHighlight
+            style={styles.botoesSeta}
+            onPress={diminuirDia}
+            disabled={refreshing}
+          >
+            <Image styles={styles.botoesImagem} source={setaEsquerda} />
+          </TouchableHighlight>
+          <Text
+            style={[styles.texto, { fontFamily: "Inter_700Bold" }]}
+            onPress={() => setOpenDate(true)}
+          >
+            Atendimentos {getDayToShow()}
+          </Text>
+          <TouchableHighlight
+            style={styles.botoesSeta}
+            onPress={aumentarDia}
+            disabled={refreshing}
+          >
+            <Image styles={styles.botoesImagem} source={setaDireita} />
+          </TouchableHighlight>
+          <DatePicker
+            modal
+            mode="date"
+            locale="pt-BR"
+            title={"Selecionar Data"}
+            open={openDate}
+            date={dayToShow}
+            onConfirm={(data) => {
+              setOpenDate(false);
+              setDayToShow(data);
+            }}
+            onCancel={() => {
+              setOpenDate(false);
+            }}
+          />
+        </View>
         <View style={styles.container}>
           {atendimentos.map((atendimento, index) => (
             <Atendimento
@@ -192,8 +354,20 @@ export function MainView(props) {
         <TouchableHighlight style={styles.botoesInferiores} onPress={deslogar}>
           <Image style={styles.imagemDeslogar} source={deslogarImagem} />
         </TouchableHighlight>
-        <TouchableHighlight style={styles.botoesInferiores} onPress={() => setCadastrar(true)}>
+        <TouchableHighlight
+          style={styles.botoesInferiores}
+          onPress={() => setCadastrar(true)}
+        >
           <Image style={styles.imagemCadastrar} source={addUser} />
+        </TouchableHighlight>
+        <TouchableHighlight
+          style={styles.botoesInferiores}
+          onPress={() => setCadastrarPaciente(true)}
+        >
+          <Image
+            style={styles.imagemCadastrarPaciente}
+            source={cadastrarPacienteImagem}
+          />
         </TouchableHighlight>
       </View>
     </SafeAreaProvider>
@@ -208,22 +382,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
   },
+  botoesTitulo: {
+    flex: 1,
+    flexDirection: "row",
+    alignSelf: "center",
+  },
+  botoesSeta: {
+    height: 60,
+    width: 60,
+    margin: 10,
+  },
+  botoesImagem: {
+    height: 40,
+    width: 40,
+    tintColor: "#0864ac",
+  },
   texto: {
-    top: 30,
     alignSelf: "center",
     fontSize: 19,
-    color: "#5E4B56",
+    color: "#0864ac",
   },
   imagemDeslogar: {
-    tintColor: "#5E4B56",
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 50,
+    tintColor: "#ffb40c",
   },
   imagemCadastrar: {
-    tintColor: "#5E4B56",
-    width: 50,
-    height: 40,
-
+    width: 60,
+    height: 50,
+    tintColor: "#ffb40c",
+  },
+  imagemCadastrarPaciente: {
+    width: 60,
+    height: 50,
+    tintColor: "#ffb40c",
   },
   title: {
     color: "white",
@@ -245,30 +437,31 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 400,
     borderBottomRightRadius: 400,
     overflow: "hidden",
-    backgroundColor: "#4C042C",
+    backgroundColor: "#0864ac",
   },
   scrollview: {
     top: 200,
     maxHeight: 525,
   },
   botoesInferiores: {
-    width: 30,
+    width: 60,
     height: 50,
   },
   containerBotoesInferiores: {
     position: "absolute",
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    width: "80%",
+    width: "100%",
     bottom: 0,
+    paddingLeft: 30,
+    paddingRight: 30,
     marginBottom: 32,
-    marginLeft: 40,
-    marginRight: 40,
     height: 40,
   },
   pacienteImagem: {
     borderRadius: 200,
-    height: 320,
+    height: 310,
     width: 324,
     position: "absolute",
     alignSelf: "center",

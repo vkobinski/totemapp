@@ -113,9 +113,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace 'com.vkobinski.totem'
+    namespace 'com.kodev.uptotem'
     defaultConfig {
-        applicationId 'com.vkobinski.totem'
+        applicationId 'com.kodev.uptotem'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

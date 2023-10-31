@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Text, TextInput, Button, TouchableHighlight } from "react-native";
+import { StyleSheet, View, Image, Text, TextInput, Button, TouchableHighlight, Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Inter_700Bold, useFonts } from "@expo-google-fonts/inter";
 import { useState } from "react";
@@ -6,63 +6,20 @@ import DatePicker from "react-native-date-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils"
-import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
-import { useEffect } from "react";
 
-export function Cadastrar(props) {
+export function CadastrarPaciente(props) {
 
-  const setCadastrar = props["setCadastrar"];
+  const setCadastrar = props["setCadastrarPaciente"];
 
   let [fontsLoaded] = useFonts({
     Inter_700Bold,
   });
 
-  
-
-  const sucessoCadastro = "Horário agendado com sucesso!";
-  const fracassoCadastro = "Não foi possível encontrar paciente com esse nome.";
-
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState(new Date());
-  const [dataNascimentoPaciente, setDataNascimentoPaciente] = useState(new Date());
-  const [horarioConsulta, setHorarioConsulta] = useState(new Date());
   const [openDate, setOpenDate] = useState(false);
   const [openHour, setOpenHour] = useState(false);
   const [textoBotao, setTextoBotao] = useState("");
-  const [pacientes, setPacientes] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  let counter = 0;
-
-useEffect(() => {
-    axios.get(utils.getData("/api/v1/paciente"))
-    .then((response) => {
-      response.data.forEach(paciente => {
-        
-      paciente = {
-        id: counter,
-        title: paciente["nomeCompleto"] + " " + convertDate(response.data[counter]["dataNascimento"]),
-        dataNascimento: convertDate(paciente["dataNascimento"]),
-        nomeCompleto: paciente["nomeCompleto"],
-      };
-
-      counter++;
-      let pacientesTemp = pacientes;
-      pacientesTemp.push(paciente);
-      setPacientes(pacientesTemp);
-    })
-
-      });
-  }, []);
-
-  const convertDate = (inputFormat) => {
-  var datePart = inputFormat.match(/\d+/g),
-  year = datePart[0], // get only two digits
-  month = datePart[1],
-  day = datePart[2];
-
-  return day+'/' + month + '/' + year;
-}
 
   const getNascimentoFormatado = (date) => {
     const day = date.getDate().toString().padStart(2, "0");
@@ -72,28 +29,17 @@ useEffect(() => {
     return `${day}/${month}/${year}`;
   };
 
-  const getHorarioFormatado = (date) => {
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    return `${hours}:${minutes}`;
-  };
-
   const cadastraAgendamento = async () => {
     axios
-      .postForm(utils.getData("/api/v1/atendimento/app/form"), {
-        userId: await AsyncStorage.getItem("user"),
-        nomePaciente: selectedItem["nomeCompleto"],
-        dataNascimento: selectedItem["dataNascimento"],
-        dataHora:
-          getNascimentoFormatado(dataNascimento) +
-          " " +
-          getHorarioFormatado(horarioConsulta),
+      .postForm(utils.getData("/api/v1/paciente/form"), {
+        nomeCompleto: nome.trim(),
+        dataNascimento:
+          getNascimentoFormatado(dataNascimento)
       })
       .then((response) => {
-        if (response.status === 404) setTextoBotao("Paciente não encontrado");
+        if (response.status === 404) setTextoBotao("Não foi possível cadastrar o paciente");
         else {
-          setTextoBotao("Sucesso!");
+          setTextoBotao("Paciente cadastrado com sucesso!");
         }
       })
       .catch((error) => {
@@ -103,12 +49,6 @@ useEffect(() => {
 
   const setaEsquerda = require("../../assets/seta-esquerda.png");
 
-  const changeItem = (item) => {
-    if(item == null) return;
-    item["title"] = item["nomeCompleto"];
-    setSelectedItem(item);
-  };
-
   return (
     <SafeAreaProvider style={styles.container}>
       <View style={styles.circle}>
@@ -116,27 +56,16 @@ useEffect(() => {
       </View>
 
       <View style={styles.containerCentral}>
-        <Text style={styles.titulo}>Novo Agendamento</Text>
+        <Text style={styles.titulo}>Novo Paciente</Text>
 
         <View style={styles.formContainer}>
           <View style={styles.labeledInput}>
-            <AutocompleteDropdown style={styles.autoComplete}
-            EmptyResultComponent={<Text>Nada Encontrado</Text>}
-            inputContainerStyle={{
-              width: 250,
-            }}
-            initialValue={{id: '1'}}
-            dataSet={pacientes}
-            onSelectItem={(value) => changeItem(value)}
-            >
-            </AutocompleteDropdown>
-            {/* <TextInput
+            <TextInput
               style={[styles.textInput, styles.text]}
               value={nome}
               onChangeText={setNome}
             />
-            */
-            <Text style={styles.label}>Nome do Paciente</Text> }
+            <Text style={styles.label}>Nome</Text>
           </View>
 
           <View style={styles.labeledInput}>
@@ -145,21 +74,16 @@ useEffect(() => {
               onTouchStart={() => setOpenDate(true)}
               value={getNascimentoFormatado(dataNascimento)}
             />
-            <Text style={styles.label}>Data da Consulta</Text>
+            <Text style={styles.label}>Data de Nascimento</Text>
           </View>
           <View style={styles.labeledInput}>
-            <TextInput
-              style={[styles.textInput, styles.text]}
-              value={getHorarioFormatado(horarioConsulta)}
-              onTouchStart={() => setOpenHour(true)}
-            />
-            <DatePicker
+
+ <DatePicker
               modal
               mode="date"
               locale="pt-BR"
-              title={"Selecionar Data"}
               open={openDate}
-              date={horarioConsulta}
+              date={dataNascimento}
               onConfirm={(data) => {
                 setOpenDate(false);
                 setDataNascimento(data);
@@ -169,30 +93,12 @@ useEffect(() => {
               }}
             />
 
-            <DatePicker
-              modal
-              locale="pt-BR"
-              is24hourSource="locale"
-              mode="time"
-              title={"Selecionar Horário"}
-              open={openHour}
-              minuteInterval={30}
-              date={horarioConsulta}
-              onConfirm={(data) => {
-                setOpenHour(false);
-                setHorarioConsulta(data);
-              }}
-              onCancel={() => {
-                setOpenHour(false);
-              }}
-            />
-            <Text style={styles.label}>Horário da Consulta</Text>
-
+           
             <View style={styles.buttonContainer}>
               <Button
                 color={"#088cf4"}
                 style={styles.button}
-                title="Agendar"
+                title="Cadastrar"
                 onPress={cadastraAgendamento}
               />
             </View>
@@ -284,9 +190,6 @@ const styles = StyleSheet.create({
     height: 25,
     width: 250,
   },
-  autoComplete: {
-    width: 250,
-  },
   buttonContainer: {
     width: 250,
     borderRadius: 5,
@@ -302,3 +205,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+

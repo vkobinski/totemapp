@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 3.13.3"
+    "version": ">= 3.13.3",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development": {
@@ -18,6 +19,12 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "victokribnski@gmail.com",
+        "ascAppId": "ba40e7bfa54641d1af800d19bfe41844",
+      }
+    }
+
   }
 }
