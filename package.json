@@ -39,7 +39,8 @@
     "react-native-websocket": "^1.0.2",
     "react-navigation-material-bottom-tabs": "^2.3.5",
     "react-use-websocket": "^4.3.1",
-    "tslib": "^2.5.3"
+    "tslib": "^2.5.3",
+    "expo-notifications": "~0.18.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

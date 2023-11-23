@@ -14,6 +14,9 @@
       }
     },
     "preview": {
+      "ios":{
+        "simulator": true
+      },
       "distribution": "internal"
     },
     "production": {}
@@ -21,8 +24,8 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "victokribnski@gmail.com",
-        "ascAppId": "ba40e7bfa54641d1af800d19bfe41844",
+        "appleId": "victokobinski@gmail.com",
+        "ascAppId": "ba40e7bfa54641d1af800d19bfe41844"
       }
     }
 

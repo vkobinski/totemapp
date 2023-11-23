@@ -1,11 +1,20 @@
 import { StatusBar } from "expo-status-bar";
 import { MainView } from "./src/components/viewselect";
 import { View, StyleSheet } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Login } from "./src/components/login";
 import { Cadastrar } from "./src/components/cadastrar";
 import { CadastrarPaciente } from "./src/components/cadastrar-paciente";
 import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -20,6 +29,23 @@ export default function App() {
   const deslogFunction = () => {
     setLoggedIn(false);
   };
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   const renderContent = () => {
     if (loggedIn && !cadastrar && !cadastrarPaciente) {

@@ -36,7 +36,7 @@ export function Login(props) {
      await axios
       .postForm(utils.getData("/api/v1/usuario/login"), {
         senha: password.trim(),
-        email: email.trim(),
+        email: email.trim().to_lower(),
       })
       .then(async (response) => {
         if (response.status === 401) {
