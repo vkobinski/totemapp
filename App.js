@@ -1,12 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { MainView } from "./src/components/viewselect";
 import { View, StyleSheet } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Login } from "./src/components/login";
 import { Cadastrar } from "./src/components/cadastrar";
 import { CadastrarPaciente } from "./src/components/cadastrar-paciente";
 import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 import * as Notifications from "expo-notifications";
+import * as Device from 'expo-device';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -25,6 +26,11 @@ export default function App() {
 
   const [cadastrar, setCadastrar] = useState(false);
   const [cadastrarPaciente, setCadastrarPaciente] = useState(false);
+
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   const deslogFunction = () => {
     setLoggedIn(false);
