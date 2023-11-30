@@ -174,9 +174,9 @@ export function MainView(props) {
   };
 
   const options = {
-    taskName: "Check new Arrived",
-    taskTitle: "Arrived",
-    taskDesc: "Check if new patients have been arrived",
+    taskName: "Procurando por novos pacientes",
+    taskTitle: "Pacientes",
+    taskDesc: "Checando se novos pacientes chegaram",
     taskIcon: {
       name: "ic_launcher",
       type: "mipmap",

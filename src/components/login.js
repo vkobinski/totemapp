@@ -31,12 +31,12 @@ export function Login(props) {
   };
 
   const onLogin = async () => {
-
-
+    setPassword(password.trim());
+    setEmail(email.trim().toLowerCase());
      await axios
       .postForm(utils.getData("/api/v1/usuario/login"), {
-        senha: password.trim(),
-        email: email.trim().to_lower(),
+        senha: password,
+        email: email,
       })
       .then(async (response) => {
         if (response.status === 401) {
