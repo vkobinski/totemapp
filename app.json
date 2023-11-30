@@ -17,13 +17,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kodev.uptotem",
-      "buildNumber": "20",
+      "buildNumber": "23",
       "infoPlist": {
         "NSAppTransportSecurity": "Esse app usa requisições HTTP.",
         "NSAllowsArbitraryLoads": "Requisições HTTP"
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icone.png",

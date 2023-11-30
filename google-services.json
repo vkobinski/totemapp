@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "486276490704",
+    "project_id": "totem-f7566",
+    "storage_bucket": "totem-f7566.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486276490704:android:107ef27460832babeac5d5",
+        "android_client_info": {
+          "package_name": "com.kodev.uptotem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABe_O8_mUcyOYBLwL9bx-jmXXrETy1-CU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

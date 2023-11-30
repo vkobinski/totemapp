@@ -38,7 +38,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then(token => {
+      setExpoPushToken(token);
+    });
+
 
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
@@ -77,6 +80,7 @@ export default function App() {
           setPassword={setPassword}
           email={email}
           setEmail={setEmail}
+          token={expoPushToken}
         />
       );
     }
@@ -123,11 +127,12 @@ async function registerForPushNotificationsAsync() {
       alert('Failed to get push token for push notification!');
       return;
     }
-    token = await Notifications.getExpoPushTokenAsync({ projectId: Constants.expoConfig.extra.eas.projectId});
-    alert(token.data);
+    token = await Notifications.getExpoPushTokenAsync({ 
+      projectId: Constants.expoConfig.extra.eas.projectId,
+    });
   } else {
     alert('Must use physical device for Push Notifications');
   }
 
-  return token;
+  return token.data;
 }

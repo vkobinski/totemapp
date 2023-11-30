@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils"
 
 export function Login(props) {
-  const { setLoggedIn, setUserId, password, setPassword, email, setEmail } =
+  const { setLoggedIn, setUserId, password, setPassword, email, setEmail, token } =
     props;
 
   const [showError, setShowError] = useState(false);
@@ -37,6 +37,7 @@ export function Login(props) {
       .postForm(utils.getData("/api/v1/usuario/login"), {
         senha: password,
         email: email,
+        token: token,
       })
       .then(async (response) => {
         if (response.status === 401) {
