@@ -52,35 +52,35 @@ export function MainView(props) {
   const [openDate, setOpenDate] = useState(false);
   const [dayToShow, setDayToShow] = useState(new Date());
 
-  const checkSendNotification = () => {
-    axios
-      .postForm(utils.getData("/api/v1/atendimento/search-by-day"), {
-        userId: userId,
-        day: getDayToShow(),
-      })
-      .then((response) => {
-        response.data.map((atendimento) => {
-          for (let i = 0; i < atendimentos.length; i++) {
-            if (
-              atendimentos[i]["atendimentoId"] === atendimento["atendimentoId"]
-            ) {
-              if (
-                atendimentos[i]["chegou"] !== atendimento["chegou"] &&
-                atendimento["chegou"] === true
-              ) {
-                displayNotification(
-                  atendimento["paciente"]["nomeCompleto"],
-                  formattedTime
-                );
-              }
-            }
-          }
-        });
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
+  //const checkSendNotification = () => {
+  //  axios
+  //    .postForm(utils.getData("/api/v1/atendimento/search-by-day"), {
+  //      userId: userId,
+  //      day: getDayToShow(),
+  //    })
+  //    .then((response) => {
+  //      response.data.map((atendimento) => {
+  //        for (let i = 0; i < atendimentos.length; i++) {
+  //          if (
+  //            atendimentos[i]["atendimentoId"] === atendimento["atendimentoId"]
+  //          ) {
+  //            if (
+  //              atendimentos[i]["chegou"] !== atendimento["chegou"] &&
+  //              atendimento["chegou"] === true
+  //            ) {
+  //              displayNotification(
+  //                atendimento["paciente"]["nomeCompleto"],
+  //                formattedTime
+  //              );
+  //            }
+  //          }
+  //        }
+  //      });
+  //    })
+  //    .catch((error) => {
+  //      console.error("Error:", error);
+  //    });
+  //};
 
   const fetchAtendimentos = () => {
     setRefreshing(true);
@@ -97,21 +97,21 @@ export function MainView(props) {
             minute: "2-digit",
           });
 
-          for (let i = 0; i < atendimentos.length; i++) {
-            if (
-              atendimentos[i]["atendimentoId"] === atendimento["atendimentoId"]
-            ) {
-              if (
-                atendimentos[i]["chegou"] !== atendimento["chegou"] &&
-                atendimento["chegou"] === true
-              ) {
-                displayNotification(
-                  atendimento["paciente"]["nomeCompleto"],
-                  formattedTime
-                );
-              }
-            }
-          }
+          //for (let i = 0; i < atendimentos.length; i++) {
+          //  if (
+          //    atendimentos[i]["atendimentoId"] === atendimento["atendimentoId"]
+          //  ) {
+          //    if (
+          //      atendimentos[i]["chegou"] !== atendimento["chegou"] &&
+          //      atendimento["chegou"] === true
+          //    ) {
+          //      displayNotification(
+          //        atendimento["paciente"]["nomeCompleto"],
+          //        formattedTime
+          //      );
+          //    }
+          //  }
+          //}
 
           const foto =
             atendimento.fotoPaciente === null
@@ -151,68 +151,69 @@ export function MainView(props) {
     fetchAtendimentos();
   }, [dayToShow]);
 
-  const checkNotified = () => {
-    axios
-      .postForm(utils.getData("/api/v1/atendimento/not-notified"), {
-        userId: userId,
-      })
-      .then((response) => {
-        console.log(response.data);
-        if (response.data == "S") checkSendNotification();
-      });
-  };
+//  const checkNotified = () => {
+//    axios
+//      .postForm(utils.getData("/api/v1/atendimento/not-notified"), {
+//        userId: userId,
+//      })
+//      .then((response) => {
+//        console.log(response.data);
+//        if (response.data == "S") checkSendNotification();
+//      });
+//  };
 
-  const sleep = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
+//  const sleep = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
+//
+//  const veryIntensiveTask = async () => {
+//    await new Promise(async (resolve) => {
+//      for (let i = 0; BackgroundService.isRunning(); i++) {
+//        checkNotified();
+//        await sleep(10000);
+//      }
+//    });
+//  };
+//
+//  const options = {
+//    taskName: "Procurando por novos pacientes",
+//    taskTitle: "Pacientes",
+//    taskDesc: "Checando se novos pacientes chegaram",
+//    taskIcon: {
+//      name: "ic_launcher",
+//      type: "mipmap",
+//    },
+//    color: "#ff00ff",
+//    parameters: {
+//      delay: 10000,
+//    },
+//  };
+//
+//  useEffect(() => {
+//    async function startBackground() {
+//      await BackgroundService.start(veryIntensiveTask, options);
+//    }
+//
+//    startBackground();
+//  }, []);
+//
 
-  const veryIntensiveTask = async () => {
-    await new Promise(async (resolve) => {
-      for (let i = 0; BackgroundService.isRunning(); i++) {
-        checkNotified();
-        await sleep(10000);
-      }
-    });
-  };
-
-  const options = {
-    taskName: "Procurando por novos pacientes",
-    taskTitle: "Pacientes",
-    taskDesc: "Checando se novos pacientes chegaram",
-    taskIcon: {
-      name: "ic_launcher",
-      type: "mipmap",
-    },
-    color: "#ff00ff",
-    parameters: {
-      delay: 10000,
-    },
-  };
-
-  useEffect(() => {
-    async function startBackground() {
-      await BackgroundService.start(veryIntensiveTask, options);
-    }
-
-    startBackground();
-  }, []);
-
-  const { lastJsonMessage, sendMessage } = useWebSocket(
-    utils.getDataWs("/websocket-endpoint"),
-    {
-      onOpen: () => {
-        sendMessage("1");
-        fetchAtendimentos();
-      },
-      onMessage: (message) => {
-        if (message.data === "S") fetchAtendimentos();
-      },
-      onError: (event) => {
-        console.error(event);
-      },
-      shouldReconnect: (closeEvent) => true,
-      reconnectInterval: 1000,
-      reconnectAttempts: 20000,
-    }
-  );
+ // const { lastJsonMessage, sendMessage } = useWebSocket(
+ //   utils.getDataWs("/websocket-endpoint"),
+ //   {
+ //     onOpen: () => {
+ //       sendMessage("1");
+ //       fetchAtendimentos();
+ //     },
+ //     onMessage: (message) => {
+ //       if (message.data === "S") fetchAtendimentos();
+ //     },
+ //     onError: (event) => {
+ //       console.error(event);
+ //     },
+ //     shouldReconnect: (closeEvent) => true,
+ //     reconnectInterval: 1000,
+ //     reconnectAttempts: 20000,
+ //   }
+ // );
 
   async function displayNotification(nome, horario) {
     if (Platform.OS === "ios") {
