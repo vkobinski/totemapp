@@ -10,7 +10,7 @@ import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Device from 'expo-device';
 
-Notifications.setNotificationHandler({
+export const usePushNotifications = Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: false,
@@ -124,7 +124,7 @@ async function registerForPushNotificationsAsync() {
       return;
     }
     token = await Notifications.getExpoPushTokenAsync({ projectId: Constants.expoConfig.extra.eas.projectId});
-    alert("Got token");
+    alert(token.data);
   } else {
     alert('Must use physical device for Push Notifications');
   }

@@ -25,7 +25,8 @@
     "production": {
       "ios": {
         "appleId": "victokobinski@gmail.com",
-        "ascAppId": "ba40e7bfa54641d1af800d19bfe41844"
+        "ascAppId": "ba40e7bfa54641d1af800d19bfe41844",
+        "appleTeamId": "4SMQ6LTAWK"
       }
     }
 

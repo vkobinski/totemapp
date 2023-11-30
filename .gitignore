@@ -1,5 +1,4 @@
 node_modules/
-android/
 .expo/
 dist/
 npm-debug.*
@@ -77,3 +76,6 @@ web-build/
 dist/
 
 # @end expo-cli
+
+android/
+android/*
