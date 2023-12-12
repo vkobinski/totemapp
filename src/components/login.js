@@ -1,5 +1,5 @@
 import axios from "axios";
-import { StyleSheet, View, Text, TextInput, Button, Image, Alert } from "react-native";
+import { StyleSheet, View, Text, TextInput, Button, Image } from "react-native";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils"
@@ -64,6 +64,14 @@ export function Login(props) {
       });
   };
 
+  const setAndTrimEmail = (newEmail) => {
+    setEmail(newEmail.trim().toLowerCase());
+  }
+
+  const setTrimPassword = (newPass) => {
+    setPassword(newPass.trim());
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.circle}>
@@ -75,7 +83,7 @@ export function Login(props) {
           <TextInput
             style={[styles.textInput, styles.text]}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={setAndTrimEmail}
           />
           <Text style={styles.text}>E-mail</Text>
         </View>
@@ -84,7 +92,7 @@ export function Login(props) {
             secureTextEntry={true}
             style={[styles.textInput, styles.text]}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={setTrimPassword}
           />
           <Text style={styles.text}>Senha</Text>
         </View>

@@ -27,6 +27,7 @@ export default function App() {
 
   const [cadastrar, setCadastrar] = useState(false);
   const [cadastrarPaciente, setCadastrarPaciente] = useState(false);
+  const [finalStatus, setFinalStatus] = useState();
 
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
@@ -118,20 +119,20 @@ async function registerForPushNotificationsAsync() {
 
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+    setFinalStatus(existingStatus);
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
+      setFinalStatus(status);
     }
     if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
+      alert('Desinstale e instale o aplicativo novamente e aceite que o aplicativo mostre notificações!');
       return;
     }
     token = await Notifications.getExpoPushTokenAsync({ 
       projectId: Constants.expoConfig.extra.eas.projectId,
     });
   } else {
-    alert('Must use physical device for Push Notifications');
+    alert('Notificações não funcionam em emuladores');
   }
 
   return token.data;
