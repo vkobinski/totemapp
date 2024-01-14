@@ -3,16 +3,13 @@ import {
   View,
   RefreshControl,
   ScrollView,
-  StatusBar,
   Image,
   Text,
   TouchableHighlight,
 } from "react-native";
 import { Atendimento } from "./atendimento.js";
-import useWebSocket from "react-use-websocket";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import BackgroundService from "react-native-background-actions";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import notifee, { AndroidImportance, EventType } from "@notifee/react-native";
 import { Platform } from "react-native";
@@ -22,6 +19,8 @@ import { Inter_700Bold } from "@expo-google-fonts/inter";
 import DatePicker from "react-native-date-picker";
 import { BlurView } from "@react-native-community/blur";
 import utils from "../singletons/Utils.js";
+import * as Notifications from "expo-notifications";
+import * as Permissions from "expo-permissions";
 
 export function MainView(props) {
   const userId = props["userId"];
@@ -45,7 +44,7 @@ export function MainView(props) {
   const setaDireita = require("../../assets/seta-direita.png");
 
   const [atendimentos, setAtendimentos] = useState([]);
-  const [notificacao, setNotificacao] = useState(1);
+  //const [notificacao, setNotificacao] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [imageToShow, setImageToShow] = useState(null);
@@ -134,6 +133,17 @@ export function MainView(props) {
         console.error("Error:", error);
       });
   };
+
+  const pedePermissao = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if(status === "denied") 
+      alert("As notificações estão desligadas pois foram recusadas quando o aplicativo abriu a primeira vez! Para ativá-las vá para as configurações ou reinstale o aplicativo.")
+  };
+
+  useEffect(() => {
+
+    pedePermissao();
+  }, []);
 
   const aumentarDia = async () => {
     dataMostrar = new Date(dayToShow);
@@ -267,11 +277,12 @@ export function MainView(props) {
   const getDayToShow = () => {
     let mm = dayToShow.getMonth() + 1; // Months start at 0!
     let dd = dayToShow.getDate();
+    let year = dayToShow.getFullYear();
 
     if (dd < 10) dd = "0" + dd;
     if (mm < 10) mm = "0" + mm;
 
-    return dd + "/" + mm;
+    return dd + "/" + mm + "/" + year;
   };
 
   const user = require("../../assets/user.png");
@@ -291,6 +302,7 @@ export function MainView(props) {
       <View style={styles.circle}>
         <Image style={styles.imagem} source={logo} />
       </View>
+
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -300,6 +312,7 @@ export function MainView(props) {
         }
         style={styles.scrollview}
       >
+
         <View style={styles.botoesTitulo}>
           <TouchableHighlight
             style={styles.botoesSeta}
@@ -312,7 +325,7 @@ export function MainView(props) {
             style={[styles.texto, { fontFamily: "Inter_700Bold" }]}
             onPress={() => setOpenDate(true)}
           >
-            Atendimentos {getDayToShow()}
+            Atendimentos {getDayToShow().substring(0, 5)}
           </Text>
           <TouchableHighlight
             style={styles.botoesSeta}

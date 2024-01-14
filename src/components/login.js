@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils"
 
 export function Login(props) {
-  const { setLoggedIn, setUserId, password, setPassword, email, setEmail, token } =
+  const { setLoggedIn, setUserId, password, setPassword, email, setEmail, token, setToken } =
     props;
 
   const [showError, setShowError] = useState(false);
@@ -31,15 +31,16 @@ export function Login(props) {
   };
 
   const onLogin = async () => {
-    setPassword(password.trim());
-    setEmail(email.trim().toLowerCase());
-     await axios
+    console.log(token);
+    
+    await axios
       .postForm(utils.getData("/api/v1/usuario/login"), {
         senha: password,
         email: email,
-        token: token,
+        token: token === undefined ? "" : token,
       })
       .then(async (response) => {
+        console.log(response);
         if (response.status === 401) {
 
           setShowError(true);
@@ -57,6 +58,7 @@ export function Login(props) {
         }
       })
       .catch((error) => {
+        console.log(error);
         setShowError(true);
         setTimeout(() => {
           setShowError(false);

@@ -3,6 +3,8 @@ class Utils {
       if (!Utils.instance) {
         this._data = "http://154.56.43.220:8080";
         this._data_ws = "ws://154.56.43.220:8080";
+        //this._data = "http://192.168.2.101:8080";
+        //this._data_ws = "ws://192.168.2.101:8080";
         Utils.instance = this;
       }
   

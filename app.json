@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Up Consultórios",
+    "name": "Up Consultorios",
     "slug": "totem",
-    "version": "1.0.1",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icone.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kodev.uptotem",
-      "buildNumber": "28",
+      "buildNumber": "35",
       "infoPlist": {
         "NSAppTransportSecurity": "Esse app usa requisições HTTP.",
         "NSAllowsArbitraryLoads": "Requisições HTTP"
@@ -42,12 +42,12 @@
           "android": {
             "compileSdkVersion": 33,
             "targetSdkVersion": 33,
-            "buildToolsVersion": "33.0.0"
+            "buildToolsVersion": "33.0.0",
+            "usesCleartextTraffic": true
           },
           "ios": {
             "deploymentTarget": "13.0",
             "useFrameworks": "static"
-
           }
         }
       ]
@@ -56,6 +56,8 @@
       "eas": {
         "projectId": "6fac23d5-f2e5-43b9-902b-5f5bdfaf7f38"
       }
-    }
-  }
+    },
+    "sdkVersion": "48.0.0"
+  },
+  "name": "totem"
 }

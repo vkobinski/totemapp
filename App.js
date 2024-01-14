@@ -82,6 +82,7 @@ export default function App() {
           email={email}
           setEmail={setEmail}
           token={expoPushToken}
+          setToken={setExpoPushToken}
         />
       );
     }
@@ -119,21 +120,26 @@ async function registerForPushNotificationsAsync() {
 
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    setFinalStatus(existingStatus);
+
+    console.log(existingStatus);
+
+    let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
-      setFinalStatus(status);
+      
+      finalStatus = status;
     }
     if (finalStatus !== 'granted') {
-      alert('Desinstale e instale o aplicativo novamente e aceite que o aplicativo mostre notificações!');
+      alert('Não foi possível conseguir permissões!');
       return;
     }
     token = await Notifications.getExpoPushTokenAsync({ 
       projectId: Constants.expoConfig.extra.eas.projectId,
     });
+    return token.data;
   } else {
-    alert('Notificações não funcionam em emuladores');
+    alert('Must use physical device for Push Notifications');
+    return null;
   }
 
-  return token.data;
 }

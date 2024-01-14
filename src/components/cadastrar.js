@@ -35,7 +35,7 @@ export function Cadastrar(props) {
   let counter = 0;
 
 useEffect(() => {
-    axios.get(utils.getData("/api/v1/paciente"))
+    axios.get(utils.getData("/api/v1/paciente/ativo"))
     .then((response) => {
       response.data.forEach(paciente => {
         
@@ -91,6 +91,7 @@ useEffect(() => {
           getHorarioFormatado(horarioConsulta),
       })
       .then((response) => {
+        console.log(response.data);
         if (response.status === 404) setTextoBotao("Paciente não encontrado");
         else {
           setTextoBotao("Sucesso!");
