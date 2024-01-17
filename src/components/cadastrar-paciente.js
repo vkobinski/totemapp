@@ -12,10 +12,11 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { useState } from "react";
+import React, { useState } from "react";
 import DatePicker from "react-native-date-picker";
 import axios from "axios";
 import utils from "../singletons/Utils";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function CadastrarPaciente(props) {
   const setCadastrar = props["setCadastrarPaciente"];
@@ -44,6 +45,17 @@ export function CadastrarPaciente(props) {
 
     return `${day}/${month}/${year}`;
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+        setNome("");
+        setDataNascimento(new Date());
+        setTextoBotao("");
+      return () => {
+  
+      };
+    }, [])
+  );
 
   const cadastraAgendamento = async () => {
     axios
@@ -179,7 +191,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: "Inter_500Medium",
-    fontSize: 16,
+    fontSize: 17,
     marginTop: 10,
     alignSelf: "flex-start",
   },
@@ -214,6 +226,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     height: 25,
     width: 250,
+    fontSize: 17,
   },
   buttonContainer: {
     width: 250,

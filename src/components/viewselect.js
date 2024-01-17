@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Atendimento } from "./atendimento.js";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import notifee, { AndroidImportance, EventType } from "@notifee/react-native";
@@ -21,6 +21,7 @@ import { BlurView } from "@react-native-community/blur";
 import utils from "../singletons/Utils.js";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function MainView({route}) {
   const {userId} = route.params;
@@ -142,6 +143,18 @@ export function MainView({route}) {
     if(status === "denied") 
       alert("As notificações estão desligadas pois foram recusadas quando o aplicativo abriu a primeira vez! Para ativá-las vá para as configurações ou reinstale o aplicativo.")
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchAtendimentos();
+
+      return () => {
+  
+      };
+    }, [])
+  );
+
+
 
   useEffect(() => {
 

@@ -13,17 +13,16 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import DatePicker from "react-native-date-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils";
 import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
 import { useEffect } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function Cadastrar(props) {
-  const setCadastrar = props["setCadastrar"];
-
   let [fontsLoaded] = useFonts({
     Inter_700Bold,
     Inter_500Medium,
@@ -46,6 +45,7 @@ export function Cadastrar(props) {
   const [pacientes, setPacientes] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [buttonColor, setButtonColor] = useState(buttonRed);
+  const [showAutoComplete, setShowAutoComplete] = useState(true);
 
   let counter = 0;
 
@@ -70,6 +70,37 @@ export function Cadastrar(props) {
       setPacientes(pacientesTemp);
     });
   }, []);
+
+  const formataPacientes = () => {
+    if (pacientes.length > 0) {
+      setPacientes((prevPacientes) => {
+        return prevPacientes.map((paciente) => {
+          console.log(paciente);
+          paciente["title"] =
+            paciente["nomeCompleto"] +
+            " " +
+            convertDate(paciente["dataNascimento"]);
+  
+          return paciente;
+        });
+      });
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setTextoBotao("");
+      setSelectedItem(null);
+      setShowAutoComplete(true);
+      setHorarioConsulta(new Date());
+      setDataNascimento(new Date());
+
+      return () => {
+        setShowAutoComplete(false);
+        formataPacientes();
+      };
+    }, [pacientes])
+  );
 
   const convertDate = (inputFormat) => {
     var datePart = inputFormat.match(/\d+/g),
@@ -128,8 +159,6 @@ export function Cadastrar(props) {
       });
   };
 
-  const setaEsquerda = require("../../assets/seta-esquerda.png");
-
   const changeItem = (item) => {
     if (item == null) return;
     item["title"] = item["nomeCompleto"];
@@ -147,25 +176,19 @@ export function Cadastrar(props) {
 
         <View style={styles.formContainer}>
           <View style={styles.labeledInput}>
-            <AutocompleteDropdown
-              style={styles.autoComplete}
-              EmptyResultComponent={<Text>Nada Encontrado</Text>}
-              inputContainerStyle={{
-                width: 250,
-              }}
-              initialValue={{ id: "1" }}
-              dataSet={pacientes}
-              onSelectItem={(value) => changeItem(value)}
-            ></AutocompleteDropdown>
-            {
-              /* <TextInput
-              style={[styles.textInput, styles.text]}
-              value={nome}
-              onChangeText={setNome}
-            />
-            */
-              <Text style={styles.label}>Nome do Paciente</Text>
-            }
+            {showAutoComplete && (
+              <AutocompleteDropdown
+                style={styles.autoComplete}
+                EmptyResultComponent={<Text>Nada Encontrado</Text>}
+                inputContainerStyle={{
+                  width: 250,
+                }}
+                initialValue={{ id: "1" }}
+                dataSet={pacientes}
+                onSelectItem={(value) => changeItem(value)}
+              />
+            )}
+            {<Text style={styles.label}>Nome do Paciente</Text>}
           </View>
 
           <View style={styles.labeledInput}>
