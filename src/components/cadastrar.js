@@ -1,68 +1,84 @@
-import { StyleSheet, View, Image, Text, TextInput, Button, TouchableHighlight } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  TextInput,
+  Button,
+  TouchableHighlight,
+} from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Inter_700Bold, useFonts } from "@expo-google-fonts/inter";
+import {
+  Inter_500Medium,
+  Inter_700Bold,
+  useFonts,
+} from "@expo-google-fonts/inter";
 import { useState } from "react";
 import DatePicker from "react-native-date-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import utils from "../singletons/Utils"
+import utils from "../singletons/Utils";
 import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
 import { useEffect } from "react";
 
 export function Cadastrar(props) {
-
   const setCadastrar = props["setCadastrar"];
 
   let [fontsLoaded] = useFonts({
     Inter_700Bold,
+    Inter_500Medium,
   });
 
-  
+  const buttonGreen = "#00A701";
+  const buttonRed = "#D00D0B";
 
   const sucessoCadastro = "Horário agendado com sucesso!";
   const fracassoCadastro = "Não foi possível encontrar paciente com esse nome.";
 
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState(new Date());
-  const [dataNascimentoPaciente, setDataNascimentoPaciente] = useState(new Date());
+  const [dataNascimentoPaciente, setDataNascimentoPaciente] = useState(
+    new Date()
+  );
   const [horarioConsulta, setHorarioConsulta] = useState(new Date());
   const [openDate, setOpenDate] = useState(false);
   const [openHour, setOpenHour] = useState(false);
   const [textoBotao, setTextoBotao] = useState("");
   const [pacientes, setPacientes] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [buttonColor, setButtonColor] = useState(buttonRed);
 
   let counter = 0;
 
-useEffect(() => {
-    axios.get(utils.getData("/api/v1/paciente/ativo"))
-    .then((response) => {
-      response.data.forEach(paciente => {
-        
-      paciente = {
-        id: counter,
-        title: paciente["nomeCompleto"] + " " + convertDate(response.data[counter]["dataNascimento"]),
-        dataNascimento: convertDate(paciente["dataNascimento"]),
-        nomeCompleto: paciente["nomeCompleto"],
-      };
+  useEffect(() => {
+    axios.get(utils.getData("/api/v1/paciente/ativo")).then((response) => {
+      response.data.forEach((paciente) => {
+        paciente = {
+          id: counter,
+          title:
+            paciente["nomeCompleto"] +
+            " " +
+            convertDate(response.data[counter]["dataNascimento"]),
+          dataNascimento: convertDate(paciente["dataNascimento"]),
+          nomeCompleto: paciente["nomeCompleto"],
+        };
 
-      counter++;
-      let pacientesTemp = pacientes;
-      pacientesTemp.push(paciente);
-      setPacientes(pacientesTemp);
-    })
-
+        counter++;
+        let pacientesTemp = pacientes;
+        pacientesTemp.push(paciente);
+        setPacientes(pacientesTemp);
       });
+    });
   }, []);
 
   const convertDate = (inputFormat) => {
-  var datePart = inputFormat.match(/\d+/g),
-  year = datePart[0], // get only two digits
-  month = datePart[1],
-  day = datePart[2];
+    var datePart = inputFormat.match(/\d+/g),
+      year = datePart[0], // get only two digits
+      month = datePart[1],
+      day = datePart[2];
 
-  return day+'/' + month + '/' + year;
-}
+    return day + "/" + month + "/" + year;
+  };
 
   const getNascimentoFormatado = (date) => {
     const day = date.getDate().toString().padStart(2, "0");
@@ -80,6 +96,12 @@ useEffect(() => {
   };
 
   const cadastraAgendamento = async () => {
+    if (selectedItem == null) {
+      setTextoBotao("Selecione um paciente");
+      setButtonColor(buttonRed);
+      return;
+    }
+
     axios
       .postForm(utils.getData("/api/v1/atendimento/app/form"), {
         userId: await AsyncStorage.getItem("user"),
@@ -92,20 +114,24 @@ useEffect(() => {
       })
       .then((response) => {
         console.log(response.data);
-        if (response.status === 404) setTextoBotao("Paciente não encontrado");
-        else {
+        if (response.status === 404) {
+          setTextoBotao("Paciente não encontrado");
+          setButtonColor(buttonRed);
+        } else {
+          setButtonColor(buttonGreen);
           setTextoBotao("Sucesso!");
         }
       })
       .catch((error) => {
+        setButtonColor(buttonRed);
         setTextoBotao("Erro ao Cadastrar!");
-      })
+      });
   };
 
   const setaEsquerda = require("../../assets/seta-esquerda.png");
 
   const changeItem = (item) => {
-    if(item == null) return;
+    if (item == null) return;
     item["title"] = item["nomeCompleto"];
     setSelectedItem(item);
   };
@@ -121,23 +147,25 @@ useEffect(() => {
 
         <View style={styles.formContainer}>
           <View style={styles.labeledInput}>
-            <AutocompleteDropdown style={styles.autoComplete}
-            EmptyResultComponent={<Text>Nada Encontrado</Text>}
-            inputContainerStyle={{
-              width: 250,
-            }}
-            initialValue={{id: '1'}}
-            dataSet={pacientes}
-            onSelectItem={(value) => changeItem(value)}
-            >
-            </AutocompleteDropdown>
-            {/* <TextInput
+            <AutocompleteDropdown
+              style={styles.autoComplete}
+              EmptyResultComponent={<Text>Nada Encontrado</Text>}
+              inputContainerStyle={{
+                width: 250,
+              }}
+              initialValue={{ id: "1" }}
+              dataSet={pacientes}
+              onSelectItem={(value) => changeItem(value)}
+            ></AutocompleteDropdown>
+            {
+              /* <TextInput
               style={[styles.textInput, styles.text]}
               value={nome}
               onChangeText={setNome}
             />
             */
-            <Text style={styles.label}>Nome do Paciente</Text> }
+              <Text style={styles.label}>Nome do Paciente</Text>
+            }
           </View>
 
           <View style={styles.labeledInput}>
@@ -168,6 +196,8 @@ useEffect(() => {
               onCancel={() => {
                 setOpenDate(false);
               }}
+              confirmText="Confirmar"
+              cancelText="Cancelar"
             />
 
             <DatePicker
@@ -186,6 +216,8 @@ useEffect(() => {
               onCancel={() => {
                 setOpenHour(false);
               }}
+              confirmText="Confirmar"
+              cancelText="Cancelar"
             />
             <Text style={styles.label}>Horário da Consulta</Text>
 
@@ -198,12 +230,17 @@ useEffect(() => {
               />
             </View>
 
-            <Text style={styles.span}>{textoBotao}</Text>
+            <Text style={[styles.span, { color: buttonColor }]}>
+              {textoBotao}
+            </Text>
           </View>
         </View>
       </View>
       <View style={styles.containerBotoesInferiores}>
-        <TouchableHighlight style={styles.botoesInferiores} onPress={() => setCadastrar(false)} >
+        <TouchableHighlight
+          style={styles.botoesInferiores}
+          onPress={() => setCadastrar(false)}
+        >
           <Image style={styles.imagemDeslogar} source={setaEsquerda} />
         </TouchableHighlight>
       </View>
@@ -224,9 +261,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#088cf4",
   },
   imagemDeslogar: {
-    tintColor: "#5E4B56",
+    tintColor: "#088cf4",
     width: 40,
-    height: 50,
+    height: 40,
   },
   botoesInferiores: {
     width: 40,
@@ -244,11 +281,12 @@ const styles = StyleSheet.create({
     height: 40,
   },
   titulo: {
+    color: "#088cf4",
     fontSize: 19,
-    color: "#5E4B56",
     fontFamily: "Inter_700Bold",
   },
   label: {
+    fontFamily: "Inter_500Medium",
     fontSize: 16,
     marginTop: 10,
     alignSelf: "flex-start",
@@ -299,7 +337,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   span: {
+    top: 150,
+    fontFamily: "Inter_700Bold",
+    position: "absolute",
     fontSize: 17,
-    marginTop: 20,
+    marginTop: 40,
   },
 });

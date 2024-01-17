@@ -9,6 +9,7 @@ import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-d
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import * as Device from 'expo-device';
+import { Calendario } from "./src/components/calendario/grid";
 
 export const usePushNotifications = Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -59,6 +60,11 @@ export default function App() {
   }, []);
 
   const renderContent = () => {
+    //return (
+    //<Calendario>
+
+    //</Calendario>
+    //);
     if (loggedIn && !cadastrar && !cadastrarPaciente) {
       return (
         <MainView
@@ -138,7 +144,6 @@ async function registerForPushNotificationsAsync() {
     });
     return token.data;
   } else {
-    alert('Must use physical device for Push Notifications');
     return null;
   }
 

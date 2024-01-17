@@ -1,25 +1,38 @@
-import { StyleSheet, View, Image, Text, TextInput, Button, TouchableHighlight, Alert } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  TextInput,
+  Button,
+  TouchableHighlight,
+  Alert,
+} from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Inter_700Bold, useFonts } from "@expo-google-fonts/inter";
+import { Inter_500Medium, Inter_700Bold, useFonts } from "@expo-google-fonts/inter";
 import { useState } from "react";
 import DatePicker from "react-native-date-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import utils from "../singletons/Utils"
+import utils from "../singletons/Utils";
 
 export function CadastrarPaciente(props) {
-
   const setCadastrar = props["setCadastrarPaciente"];
 
   let [fontsLoaded] = useFonts({
+    Inter_500Medium,
     Inter_700Bold,
   });
+
+  const buttonGreen = "#00A701";
+  const buttonRed = "#D00D0B";
 
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState(new Date());
   const [openDate, setOpenDate] = useState(false);
   const [openHour, setOpenHour] = useState(false);
   const [textoBotao, setTextoBotao] = useState("");
+  const [buttonColor, setButtonColor] = useState(buttonRed);
 
   const getNascimentoFormatado = (date) => {
     const day = date.getDate().toString().padStart(2, "0");
@@ -33,18 +46,22 @@ export function CadastrarPaciente(props) {
     axios
       .postForm(utils.getData("/api/v1/paciente/form"), {
         nomeCompleto: nome.trim(),
-        dataNascimento:
-          getNascimentoFormatado(dataNascimento)
+        dataNascimento: getNascimentoFormatado(dataNascimento),
       })
       .then((response) => {
-        if (response.status === 404) setTextoBotao("Não foi possível cadastrar o paciente");
+        if (response.status === 404) {
+          setButtonColor(buttonRed);
+          setTextoBotao("Não foi possível cadastrar o paciente");
+        }
         else {
+          setButtonColor(buttonGreen);
           setTextoBotao("Paciente cadastrado com sucesso!");
         }
       })
       .catch((error) => {
+        setButtonColor(buttonRed);
         setTextoBotao("Erro ao Cadastrar!");
-      })
+      });
   };
 
   const setaEsquerda = require("../../assets/seta-esquerda.png");
@@ -77,11 +94,11 @@ export function CadastrarPaciente(props) {
             <Text style={styles.label}>Data de Nascimento</Text>
           </View>
           <View style={styles.labeledInput}>
-
- <DatePicker
+            <DatePicker
               modal
               mode="date"
               locale="pt-BR"
+            title={"Selecionar Data"}
               open={openDate}
               date={dataNascimento}
               onConfirm={(data) => {
@@ -91,9 +108,11 @@ export function CadastrarPaciente(props) {
               onCancel={() => {
                 setOpenDate(false);
               }}
+ confirmText="Confirmar"
+            cancelText="Cancelar"
+ 
             />
 
-           
             <View style={styles.buttonContainer}>
               <Button
                 color={"#088cf4"}
@@ -103,12 +122,17 @@ export function CadastrarPaciente(props) {
               />
             </View>
 
-            <Text style={styles.span}>{textoBotao}</Text>
+            <Text style={[styles.span, { color: buttonColor }]}>
+              {textoBotao}
+            </Text>
           </View>
         </View>
       </View>
       <View style={styles.containerBotoesInferiores}>
-        <TouchableHighlight style={styles.botoesInferiores} onPress={() => setCadastrar(false)} >
+        <TouchableHighlight
+          style={styles.botoesInferiores}
+          onPress={() => setCadastrar(false)}
+        >
           <Image style={styles.imagemDeslogar} source={setaEsquerda} />
         </TouchableHighlight>
       </View>
@@ -129,7 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#088cf4",
   },
   imagemDeslogar: {
-    tintColor: "#5E4B56",
+    tintColor: "#088cf4",
     width: 40,
     height: 50,
   },
@@ -149,11 +173,12 @@ const styles = StyleSheet.create({
     height: 40,
   },
   titulo: {
+    color: "#088cf4",
     fontSize: 19,
-    color: "#5E4B56",
     fontFamily: "Inter_700Bold",
   },
   label: {
+    fontFamily: "Inter_500Medium",
     fontSize: 16,
     marginTop: 10,
     alignSelf: "flex-start",
@@ -201,8 +226,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   span: {
+    top: 150,
+    fontFamily: "Inter_700Bold",
+    position: "absolute",
     fontSize: 17,
-    marginTop: 20,
+    marginTop: 40,
   },
 });
-

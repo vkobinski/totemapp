@@ -5,7 +5,7 @@ import {
   ScrollView,
   Image,
   Text,
-  TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import { Atendimento } from "./atendimento.js";
 import { useEffect, useState } from "react";
@@ -40,7 +40,7 @@ export function MainView(props) {
   const deslogarImagem = require("../../assets/deslogar.png");
   const addUser = require("../../assets/cadastro.png");
   const cadastrarPacienteImagem = require("../../assets/add-user.png");
-  const setaEsquerda = require("../../assets/seta-esquerda-2.png");
+  const setaEsquerda = require("../../assets/seta-esquerda.png");
   const setaDireita = require("../../assets/seta-direita.png");
 
   const [atendimentos, setAtendimentos] = useState([]);
@@ -161,70 +161,6 @@ export function MainView(props) {
     fetchAtendimentos();
   }, [dayToShow]);
 
-//  const checkNotified = () => {
-//    axios
-//      .postForm(utils.getData("/api/v1/atendimento/not-notified"), {
-//        userId: userId,
-//      })
-//      .then((response) => {
-//        console.log(response.data);
-//        if (response.data == "S") checkSendNotification();
-//      });
-//  };
-
-//  const sleep = (time) => new Promise((resolve) => setTimeout(() => resolve(), time));
-//
-//  const veryIntensiveTask = async () => {
-//    await new Promise(async (resolve) => {
-//      for (let i = 0; BackgroundService.isRunning(); i++) {
-//        checkNotified();
-//        await sleep(10000);
-//      }
-//    });
-//  };
-//
-//  const options = {
-//    taskName: "Procurando por novos pacientes",
-//    taskTitle: "Pacientes",
-//    taskDesc: "Checando se novos pacientes chegaram",
-//    taskIcon: {
-//      name: "ic_launcher",
-//      type: "mipmap",
-//    },
-//    color: "#ff00ff",
-//    parameters: {
-//      delay: 10000,
-//    },
-//  };
-//
-//  useEffect(() => {
-//    async function startBackground() {
-//      await BackgroundService.start(veryIntensiveTask, options);
-//    }
-//
-//    startBackground();
-//  }, []);
-//
-
- // const { lastJsonMessage, sendMessage } = useWebSocket(
- //   utils.getDataWs("/websocket-endpoint"),
- //   {
- //     onOpen: () => {
- //       sendMessage("1");
- //       fetchAtendimentos();
- //     },
- //     onMessage: (message) => {
- //       if (message.data === "S") fetchAtendimentos();
- //     },
- //     onError: (event) => {
- //       console.error(event);
- //     },
- //     shouldReconnect: (closeEvent) => true,
- //     reconnectInterval: 1000,
- //     reconnectAttempts: 20000,
- //   }
- // );
-
   async function displayNotification(nome, horario) {
     if (Platform.OS === "ios") {
       await notifee.requestPermission();
@@ -314,26 +250,26 @@ export function MainView(props) {
       >
 
         <View style={styles.botoesTitulo}>
-          <TouchableHighlight
+          <TouchableOpacity
             style={styles.botoesSeta}
             onPress={diminuirDia}
             disabled={refreshing}
           >
-            <Image styles={styles.botoesImagem} source={setaEsquerda} />
-          </TouchableHighlight>
+            <Image style={styles.botoesImagem} source={setaEsquerda} />
+          </TouchableOpacity>
           <Text
             style={[styles.texto, { fontFamily: "Inter_700Bold" }]}
             onPress={() => setOpenDate(true)}
           >
             Atendimentos {getDayToShow().substring(0, 5)}
           </Text>
-          <TouchableHighlight
+          <TouchableOpacity
             style={styles.botoesSeta}
             onPress={aumentarDia}
             disabled={refreshing}
           >
-            <Image styles={styles.botoesImagem} source={setaDireita} />
-          </TouchableHighlight>
+            <Image style={styles.botoesImagem} source={setaDireita} />
+          </TouchableOpacity>
           <DatePicker
             modal
             mode="date"
@@ -348,6 +284,8 @@ export function MainView(props) {
             onCancel={() => {
               setOpenDate(false);
             }}
+            confirmText="Confirmar"
+            cancelText="Cancelar"
           />
         </View>
         <View style={styles.container}>
@@ -365,16 +303,16 @@ export function MainView(props) {
         </View>
       </ScrollView>
       <View style={styles.containerBotoesInferiores}>
-        <TouchableHighlight style={styles.botoesInferiores} onPress={deslogar}>
+        <TouchableOpacity style={styles.botoesInferiores} onPress={deslogar}>
           <Image style={styles.imagemDeslogar} source={deslogarImagem} />
-        </TouchableHighlight>
-        <TouchableHighlight
+        </TouchableOpacity>
+        <TouchableOpacity
           style={styles.botoesInferiores}
           onPress={() => setCadastrar(true)}
         >
           <Image style={styles.imagemCadastrar} source={addUser} />
-        </TouchableHighlight>
-        <TouchableHighlight
+        </TouchableOpacity>
+        <TouchableOpacity
           style={styles.botoesInferiores}
           onPress={() => setCadastrarPaciente(true)}
         >
@@ -382,7 +320,7 @@ export function MainView(props) {
             style={styles.imagemCadastrarPaciente}
             source={cadastrarPacienteImagem}
           />
-        </TouchableHighlight>
+        </TouchableOpacity>
       </View>
     </SafeAreaProvider>
   );
@@ -397,24 +335,22 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   botoesTitulo: {
-    flex: 1,
     flexDirection: "row",
-    alignSelf: "center",
+    alignSelf: "auto",
+    height: 40,
+    justifyContent: "space-around",
   },
   botoesSeta: {
-    height: 60,
-    width: 60,
-    margin: 10,
   },
   botoesImagem: {
-    height: 40,
     width: 40,
-    tintColor: "#0864ac",
+    height: 40,
+    resizeMode: 'contain'
   },
   texto: {
     alignSelf: "center",
     fontSize: 19,
-    color: "#0864ac",
+    color: "#0095FF",
   },
   imagemDeslogar: {
     width: 60,
@@ -451,8 +387,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 400,
     borderBottomRightRadius: 400,
     overflow: "hidden",
-    backgroundColor: "#0864ac",
+    backgroundColor: "#0095FF",
   },
+
   scrollview: {
     top: 200,
     maxHeight: 525,
@@ -475,8 +412,8 @@ const styles = StyleSheet.create({
   },
   pacienteImagem: {
     borderRadius: 200,
-    height: 310,
-    width: 324,
+    height: 340,
+    width: 340,
     position: "absolute",
     alignSelf: "center",
     top: 261,

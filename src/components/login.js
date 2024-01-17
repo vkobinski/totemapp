@@ -37,7 +37,7 @@ export function Login(props) {
       .postForm(utils.getData("/api/v1/usuario/login"), {
         senha: password,
         email: email,
-        token: token === undefined ? "" : token,
+        token: token === null ? "" : token,
       })
       .then(async (response) => {
         console.log(response);
