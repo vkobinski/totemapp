@@ -128,14 +128,14 @@ export function CadastrarPaciente(props) {
           </View>
         </View>
       </View>
-      <View style={styles.containerBotoesInferiores}>
+      {/* <View style={styles.containerBotoesInferiores}>
         <TouchableHighlight
           style={styles.botoesInferiores}
           onPress={() => setCadastrar(false)}
         >
           <Image style={styles.imagemDeslogar} source={setaEsquerda} />
         </TouchableHighlight>
-      </View>
+      </View> */}
     </SafeAreaProvider>
   );
 }

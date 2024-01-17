@@ -236,14 +236,11 @@ export function Cadastrar(props) {
           </View>
         </View>
       </View>
-      <View style={styles.containerBotoesInferiores}>
-        <TouchableHighlight
-          style={styles.botoesInferiores}
-          onPress={() => setCadastrar(false)}
-        >
-          <Image style={styles.imagemDeslogar} source={setaEsquerda} />
-        </TouchableHighlight>
-      </View>
+      {/* <View style={styles.containerBotoesInferiores}> */}
+        {/* <TouchableHighlight style={styles.botoesInferiores} onPress={() => setCadastrar(false)} > */}
+          {/* <Image style={styles.imagemDeslogar} source={setaEsquerda} /> */}
+        {/* </TouchableHighlight> */}
+      {/* </View> */}
     </SafeAreaProvider>
   );
 }

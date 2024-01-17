@@ -22,11 +22,11 @@ import utils from "../singletons/Utils.js";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 
-export function MainView(props) {
-  const userId = props["userId"];
-  const deslogFunction = props["deslogFunction"];
-  const setCadastrar = props["setCadastrar"];
-  const setCadastrarPaciente = props["setCadastrarPaciente"];
+export function MainView({route}) {
+  const {userId} = route.params;
+  //const deslogFunction = props["deslogFunction"];
+  //const setCadastrar = props["setCadastrar"];
+  //const setCadastrarPaciente = props["setCadastrarPaciente"];
 
   let [fontsLoaded] = useFonts({
     Inter_700Bold,
@@ -302,26 +302,17 @@ export function MainView(props) {
           ))}
         </View>
       </ScrollView>
-      <View style={styles.containerBotoesInferiores}>
-        <TouchableOpacity style={styles.botoesInferiores} onPress={deslogar}>
-          <Image style={styles.imagemDeslogar} source={deslogarImagem} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.botoesInferiores}
-          onPress={() => setCadastrar(true)}
-        >
-          <Image style={styles.imagemCadastrar} source={addUser} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.botoesInferiores}
-          onPress={() => setCadastrarPaciente(true)}
-        >
-          <Image
-            style={styles.imagemCadastrarPaciente}
-            source={cadastrarPacienteImagem}
-          />
-        </TouchableOpacity>
-      </View>
+      {/* <View style={styles.containerBotoesInferiores}> */}
+        {/* <TouchableOpacity style={styles.botoesInferiores} onPress={deslogar}> */}
+          {/* <Image style={styles.imagemDeslogar} source={deslogarImagem} /> */}
+        {/* </TouchableOpacity> */}
+        {/* <TouchableOpacity style={styles.botoesInferiores} onPress={() => setCadastrar(true)}> */}
+          {/* <Image style={styles.imagemCadastrar} source={addUser} /> */}
+        {/* </TouchableOpacity> */}
+        {/* <TouchableOpacity style={styles.botoesInferiores} onPress={() => setCadastrarPaciente(true)} > */}
+          {/* <Image style={styles.imagemCadastrarPaciente} source={cadastrarPacienteImagem} /> */}
+        {/* </TouchableOpacity> */}
+      {/* </View> */}
     </SafeAreaProvider>
   );
 }
@@ -387,7 +378,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 400,
     borderBottomRightRadius: 400,
     overflow: "hidden",
-    backgroundColor: "#0095FF",
+    backgroundColor: "#088cf4",
   },
 
   scrollview: {

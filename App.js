@@ -8,8 +8,10 @@ import { CadastrarPaciente } from "./src/components/cadastrar-paciente";
 import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
-import * as Device from 'expo-device';
+import * as Device from "expo-device";
 import { Calendario } from "./src/components/calendario/grid";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
 export const usePushNotifications = Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -30,31 +32,36 @@ export default function App() {
   const [cadastrarPaciente, setCadastrarPaciente] = useState(false);
   const [finalStatus, setFinalStatus] = useState();
 
-  const [expoPushToken, setExpoPushToken] = useState('');
+  const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
+
+  const Tab = createBottomTabNavigator();
 
   const deslogFunction = () => {
     setLoggedIn(false);
   };
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => {
+    registerForPushNotificationsAsync().then((token) => {
       setExpoPushToken(token);
     });
 
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      setNotification(notification);
-    });
-
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
@@ -65,22 +72,11 @@ export default function App() {
 
     //</Calendario>
     //);
-    if (loggedIn && !cadastrar && !cadastrarPaciente) {
+
+    if(!loggedIn) {
+
       return (
-        <MainView
-          userId={userId}
-          deslogFunction={deslogFunction}
-          setCadastrar={setCadastrar}
-          setCadastrarPaciente={setCadastrarPaciente}
-        />
-      );
-    } else if (loggedIn && cadastrarPaciente) {
-      return <CadastrarPaciente setCadastrarPaciente={setCadastrarPaciente} />;
-    } else if (loggedIn && cadastrar) {
-      return <Cadastrar setCadastrar={setCadastrar} />;
-    } else {
-      return (
-        <Login
+       <Login
           setLoggedIn={setLoggedIn}
           setUserId={setUserId}
           password={password}
@@ -90,17 +86,53 @@ export default function App() {
           token={expoPushToken}
           setToken={setExpoPushToken}
         />
+
+      );
+    } else {
+      return (
+
+ <Tab.Navigator screenOptions={{headerShown: false}}>
+            <Tab.Screen name="Consultas" component={MainView} initialParams={{userId: userId}}/>
+            <Tab.Screen name="Paciente" component={CadastrarPaciente} />
+            <Tab.Screen name="Agendar" component={Cadastrar} />
+            <Tab.Screen name="Calendário" component={Calendario} />
+          </Tab.Navigator>
       );
     }
+
+    if (loggedIn && !cadastrar && !cadastrarPaciente) {
+      return (
+        <MainView
+          userId={userId}
+          deslogFunction={deslogFunction}
+          setCadastrar={setCadastrar}
+          setCadastrarPaciente={setCadastrarPaciente}
+        />
+      );
+    };
+  }
+
+  const normalTheme = {
+    ...DefaultTheme,
+    dark: false,
+    colors:{
+      ...DefaultTheme.colors,
+      background: "transparent",
+    },
   };
 
   return (
-    <AutocompleteDropdownContextProvider>
-      <View style={styles.container}>
-        {renderContent()}
-        <StatusBar />
-      </View>
-    </AutocompleteDropdownContextProvider>
+    <>
+      <NavigationContainer theme={normalTheme}>
+        <AutocompleteDropdownContextProvider>
+          <View style={styles.container}>
+            {renderContent()}
+            <StatusBar />
+          </View>
+         
+        </AutocompleteDropdownContextProvider>
+      </NavigationContainer>
+    </>
   );
 }
 
@@ -115,36 +147,36 @@ const styles = StyleSheet.create({
 async function registerForPushNotificationsAsync() {
   let token;
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
+      lightColor: "#FF231F7C",
     });
   }
 
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
 
     console.log(existingStatus);
 
     let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
+    if (existingStatus !== "granted") {
       const { status } = await Notifications.requestPermissionsAsync();
-      
+
       finalStatus = status;
     }
-    if (finalStatus !== 'granted') {
-      alert('Não foi possível conseguir permissões!');
+    if (finalStatus !== "granted") {
+      alert("Não foi possível conseguir permissões!");
       return;
     }
-    token = await Notifications.getExpoPushTokenAsync({ 
+    token = await Notifications.getExpoPushTokenAsync({
       projectId: Constants.expoConfig.extra.eas.projectId,
     });
     return token.data;
   } else {
     return null;
   }
-
 }
