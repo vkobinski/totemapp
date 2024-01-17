@@ -32,8 +32,7 @@ export function Cadastrar(props) {
   const buttonGreen = "#00A701";
   const buttonRed = "#D00D0B";
 
-  const sucessoCadastro = "Horário agendado com sucesso!";
-  const fracassoCadastro = "Não foi possível encontrar paciente com esse nome.";
+  const logo = require("../../assets/logo.png");
 
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState(new Date());
@@ -52,6 +51,7 @@ export function Cadastrar(props) {
 
   useEffect(() => {
     axios.get(utils.getData("/api/v1/paciente/ativo")).then((response) => {
+      let pacientesTemp = [];
       response.data.forEach((paciente) => {
         paciente = {
           id: counter,
@@ -64,10 +64,10 @@ export function Cadastrar(props) {
         };
 
         counter++;
-        let pacientesTemp = pacientes;
         pacientesTemp.push(paciente);
-        setPacientes(pacientesTemp);
       });
+
+      setPacientes(pacientesTemp);
     });
   }, []);
 
@@ -221,14 +221,13 @@ export function Cadastrar(props) {
             />
             <Text style={styles.label}>Horário da Consulta</Text>
 
-            <View style={styles.buttonContainer}>
-              <Button
-                color={"#088cf4"}
-                style={styles.button}
-                title="Agendar"
-                onPress={cadastraAgendamento}
-              />
-            </View>
+            <TouchableHighlight
+              style={styles.buttonContainer}
+              onPress={cadastraAgendamento}
+            >
+              <Text style={styles.button}>Agendar</Text>
+              {/* <Button color={"#088cf4"} title="Cadastrar" onPress={cadastraAgendamento} /> */}
+            </TouchableHighlight>
 
             <Text style={[styles.span, { color: buttonColor }]}>
               {textoBotao}
@@ -237,9 +236,9 @@ export function Cadastrar(props) {
         </View>
       </View>
       {/* <View style={styles.containerBotoesInferiores}> */}
-        {/* <TouchableHighlight style={styles.botoesInferiores} onPress={() => setCadastrar(false)} > */}
-          {/* <Image style={styles.imagemDeslogar} source={setaEsquerda} /> */}
-        {/* </TouchableHighlight> */}
+      {/* <TouchableHighlight style={styles.botoesInferiores} onPress={() => setCadastrar(false)} > */}
+      {/* <Image style={styles.imagemDeslogar} source={setaEsquerda} /> */}
+      {/* </TouchableHighlight> */}
       {/* </View> */}
     </SafeAreaProvider>
   );
@@ -325,13 +324,19 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: 250,
+    height: 40,
     borderRadius: 5,
-    marginTop: 25,
+    marginTop: 30,
     justifyContent: "center",
     alignSelf: "center",
+    backgroundColor: "#088cf4",
   },
   button: {
+    fontSize: 18,
     width: "100%",
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Inter_700Bold",
   },
   span: {
     top: 150,

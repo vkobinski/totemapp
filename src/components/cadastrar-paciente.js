@@ -4,16 +4,17 @@ import {
   Image,
   Text,
   TextInput,
-  Button,
   TouchableHighlight,
-  Alert,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Inter_500Medium, Inter_700Bold, useFonts } from "@expo-google-fonts/inter";
+import {
+  Inter_500Medium,
+  Inter_700Bold,
+  useFonts,
+} from "@expo-google-fonts/inter";
 import { useState } from "react";
 import DatePicker from "react-native-date-picker";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils";
 
 export function CadastrarPaciente(props) {
@@ -23,6 +24,8 @@ export function CadastrarPaciente(props) {
     Inter_500Medium,
     Inter_700Bold,
   });
+
+  const logo = require("../../assets/logo.png");
 
   const buttonGreen = "#00A701";
   const buttonRed = "#D00D0B";
@@ -52,8 +55,7 @@ export function CadastrarPaciente(props) {
         if (response.status === 404) {
           setButtonColor(buttonRed);
           setTextoBotao("Não foi possível cadastrar o paciente");
-        }
-        else {
+        } else {
           setButtonColor(buttonGreen);
           setTextoBotao("Paciente cadastrado com sucesso!");
         }
@@ -98,7 +100,7 @@ export function CadastrarPaciente(props) {
               modal
               mode="date"
               locale="pt-BR"
-            title={"Selecionar Data"}
+              title={"Selecionar Data"}
               open={openDate}
               date={dataNascimento}
               onConfirm={(data) => {
@@ -108,19 +110,17 @@ export function CadastrarPaciente(props) {
               onCancel={() => {
                 setOpenDate(false);
               }}
- confirmText="Confirmar"
-            cancelText="Cancelar"
- 
+              confirmText="Confirmar"
+              cancelText="Cancelar"
             />
 
-            <View style={styles.buttonContainer}>
-              <Button
-                color={"#088cf4"}
-                style={styles.button}
-                title="Cadastrar"
-                onPress={cadastraAgendamento}
-              />
-            </View>
+            <TouchableHighlight
+              style={styles.buttonContainer}
+              onPress={cadastraAgendamento}
+            >
+              <Text style={styles.button}>Cadastrar</Text>
+              {/* <Button color={"#088cf4"} title="Cadastrar" onPress={cadastraAgendamento} /> */}
+            </TouchableHighlight>
 
             <Text style={[styles.span, { color: buttonColor }]}>
               {textoBotao}
@@ -217,13 +217,19 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: 250,
+    height: 40,
     borderRadius: 5,
-    marginTop: 25,
+    marginTop: 20,
     justifyContent: "center",
     alignSelf: "center",
+    backgroundColor: "#088cf4",
   },
   button: {
+    fontSize: 18,
     width: "100%",
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Inter_700Bold",
   },
   span: {
     top: 150,

@@ -10,28 +10,27 @@ export function Login(props) {
 
   const [showError, setShowError] = useState(false);
 
-  logo = require("../../assets/logo.png");
+  const logo = require("../../assets/logo.png");
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const value = await AsyncStorage.getItem("user");
-        if (value !== null) {
-          setUserId(value);
-          setLoggedIn(true);
-        }
-      } catch (e) {}
-    };
+ useEffect(() => {
+   const loadData = async () => {
+     try {
+       const value = await AsyncStorage.getItem("user");
+       if (value !== null) {
+         setUserId(value);
+         setLoggedIn(true);
+       }
+     } catch (e) {}
+   };
 
-    loadData();
-  }, []);
+   loadData();
+ }, []);
 
   const saveUser = async (data) => {
     await AsyncStorage.setItem("user", data.toString());
   };
 
   const onLogin = async () => {
-    console.log(token);
     
     await axios
       .postForm(utils.getData("/api/v1/usuario/login"), {
@@ -100,7 +99,7 @@ export function Login(props) {
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            color={"#0864ac"}
+            color={"#088cf4"}
             style={styles.button}
             title="Entrar"
             onPress={onLogin}
@@ -136,14 +135,14 @@ const styles = StyleSheet.create({
   },
   circle: {
     position: "absolute",
-    top: -35,
+    top: -50,
     alignSelf: "center",
     height: "35%",
     width: "140%",
     borderBottomLeftRadius: 350,
     borderBottomRightRadius: 350,
     overflow: "hidden",
-    backgroundColor: "#0864ac",
+    backgroundColor: "#088cf4",
   },
   formContainer: {
     marginTop: 100,
@@ -174,6 +173,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: "center",
     alignSelf: "center",
+
   },
   button: {
     width: "100%",

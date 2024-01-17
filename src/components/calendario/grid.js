@@ -29,6 +29,8 @@ export function Calendario(props) {
 
   const setaEsquerda = require("../../../assets/seta-esquerda.png");
 
+  logo = require("../../../assets/logo.png");
+
   const [from] = React.useState(moment().subtract(2, "days").toDate());
   const [till] = React.useState(moment().add(2, "days").toDate());
 
@@ -50,21 +52,15 @@ export function Calendario(props) {
 
   return (
     <SafeAreaProvider style={styles.container}>
-      <View style={styles.circle}></View>
+      <View style={styles.circle}>
+        <Image style={styles.imagem} source={logo} />
+      </View>
 
       <View style={styles.containerCentral}>
-        <Text style={styles.titulo}>Calendário</Text>
 
         <ScrollView style={styles.scroll}>{renderDays()}</ScrollView>
       </View>
-      <View style={styles.containerBotoesInferiores}>
-        <TouchableHighlight
-          style={styles.botoesInferiores}
-          onPress={() => setCadastrar(false)}
-        >
-          <Image style={styles.imagemDeslogar} source={setaEsquerda} />
-        </TouchableHighlight>
-      </View>
+     
     </SafeAreaProvider>
   );
 }

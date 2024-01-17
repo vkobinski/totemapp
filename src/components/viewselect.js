@@ -37,6 +37,8 @@ export function MainView({route}) {
     deslogFunction();
   };
 
+  const logo = require("../../assets/logo.png");
+
   const deslogarImagem = require("../../assets/deslogar.png");
   const addUser = require("../../assets/cadastro.png");
   const cadastrarPacienteImagem = require("../../assets/add-user.png");
@@ -50,6 +52,7 @@ export function MainView({route}) {
   const [imageToShow, setImageToShow] = useState(null);
   const [openDate, setOpenDate] = useState(false);
   const [dayToShow, setDayToShow] = useState(new Date());
+  const [swipe, setSwipe] = useState('');
 
   //const checkSendNotification = () => {
   //  axios
@@ -192,13 +195,6 @@ export function MainView({route}) {
     setNotificacao(notificacao + 1);
   }
 
-  useEffect(() => {
-    return notifee.onBackgroundEvent(async ({ type, detail }) => {
-      if (type === EventType.PRESS) {
-        console.log(detail);
-      }
-    });
-  }, []);
 
   const verPaciente = (novaImagem) => {
     setShowImage(true);
@@ -223,6 +219,7 @@ export function MainView({route}) {
 
   const user = require("../../assets/user.png");
 
+
   return (
     <SafeAreaProvider>
       {showImage === true ? (
@@ -238,7 +235,6 @@ export function MainView({route}) {
       <View style={styles.circle}>
         <Image style={styles.imagem} source={logo} />
       </View>
-
       <ScrollView
         refreshControl={
           <RefreshControl
