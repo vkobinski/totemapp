@@ -10,45 +10,77 @@ import {
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Inter_700Bold, useFonts } from "@expo-google-fonts/inter";
-import { useState } from "react";
-import DatePicker from "react-native-date-picker";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import utils from "../../singletons/Utils";
-import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
-import { useEffect } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import Dia from "./Dia";
 import WeekDay from "./week-day";
+import { DayHeader } from "./header";
+import { render } from "react-dom";
 
 export function Calendario(props) {
   const setCadastrar = props["setCadastrar"];
 
-  const [nome, setNome] = useState("");
-
-  const setaEsquerda = require("../../../assets/seta-esquerda.png");
-
   logo = require("../../../assets/logo.png");
 
-  const [from] = React.useState(moment().subtract(2, "days").toDate());
-  const [till] = React.useState(moment().add(2, "days").toDate());
+  const [days, setDays] = useState([]);
+
+  const [from] = React.useState(moment().add(1, "days").toDate());
+  const [till] = React.useState(moment().add(8, "days").toDate());
+
+  useEffect(() => {
+    let cur = from;
+    const newDays = [];
+
+    do {
+      let newDay = {
+        date: cur,
+        hours: [],
+        hoursMarked: [],
+      };
+
+      const startTime = 7 * 60;
+      const endTime = 21 * 60;
+      const interval = 30;
+
+      for (let minutes = startTime; minutes < endTime; minutes += interval) {
+        const hour = Math.floor(minutes / 60);
+        const minute = minutes % 60;
+        newDay.hours.push(
+          `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+        );
+        newDay.hoursMarked.push(false);
+      }
+
+      newDays.push(newDay);
+
+      cur = moment(cur).add(1, "days").toDate();
+    } while (cur.getDay() !== till.getDay());
+
+    setDays(newDays);
+  }, []);
 
   const renderDays = () => {
     let cur = from;
 
     const views = [];
+    const daysViews = [];
     let i = 1;
 
     do {
-      views.push(<WeekDay key={i} item={{title: "teste"}} />);
+      views.push(<DayHeader key={i} item={{ day: days[i - 1], setDays: setDays, days: days, dayIndex: i-1 }} />);
+      daysViews.push(<WeekDay key={i} item={{ day: days[i - 1], setDays: setDays, days: days, dayIndex: i-1}} />);
       i++;
 
-      cur.setDate(cur.getDate() + 1);
-    } while(cur.getDay() !== till.getDay() )
+      cur = moment(cur).add(1, "days").toDate();
+    } while (cur.getDay() !== till.getDay());
 
-    return views;
+    return {
+      views: views,
+      days: daysViews,
+    };
   };
+
+  const renderViews = renderDays();
 
   return (
     <SafeAreaProvider style={styles.container}>
@@ -57,10 +89,13 @@ export function Calendario(props) {
       </View>
 
       <View style={styles.containerCentral}>
-
-        <ScrollView style={styles.scroll}>{renderDays()}</ScrollView>
+        <View style={{ ...styles.daysContainer, backgroundColor: "#f2f2f2" }}>
+          {renderViews.views}
+        </View>
+        <ScrollView style={styles.scroll}>
+          <View style={styles.daysContainer}>{renderViews.days}</View>
+        </ScrollView>
       </View>
-     
     </SafeAreaProvider>
   );
 }
@@ -115,7 +150,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     height: 480,
     alignSelf: "center",
-    backgroundColor: "black",
   },
   imagem: {
     height: 140,
@@ -143,9 +177,6 @@ const styles = StyleSheet.create({
     height: 25,
     width: 250,
   },
-  autoComplete: {
-    width: 250,
-  },
   buttonContainer: {
     width: 250,
     borderRadius: 5,
@@ -161,7 +192,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   scroll: {
-    backgroundColor: "blue",
-    width: 500,
+    width: 380,
+  },
+  daysContainer: {
+    padding: 10,
+    width: "100%",
+    alignContent: "center",
+    display: "flex",
+    flexDirection: "row",
+    //backgroundColor: "#f2f2f2",
+    justifyContent: "center",
   },
 });
