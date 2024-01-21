@@ -1,19 +1,23 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { DayHeader } from "./header";
+import { useState } from "react";
+import { useFonts, Inter_400Regular } from "expo-font";
 
 export default function WeekDay(props) {
   const { item } = props;
   if (item.day === undefined) return;
+
+
+let [fontsLoaded] = useFonts({
+    Inter_400Regular,
+  });
 
   const days = item.days;
   const dayIndex = item.dayIndex;
   const setDays = item.setDays;
 
   const markDay = (index) => {
-    console.log(index);
     let newDays = [...days];
-
-    console.log(dayIndex);
 
     newDays[dayIndex].hoursMarked[index] =
       !newDays[dayIndex].hoursMarked[index];
@@ -21,12 +25,31 @@ export default function WeekDay(props) {
     setDays(newDays);
   };
 
+  const desmarkHour = (index) => {
+    let newDays = [...days];
+
+    let trueCount = 0;
+
+    for(let x = 0; x < 7; x++) {
+      if(newDays[x].hoursMarked[index]) trueCount++;
+    }
+
+    for (let x = 0; x < 7; x++) {
+      if(trueCount > 4) newDays[x].hoursMarked[index] = false;
+      else newDays[x].hoursMarked[index] = true;
+    }
+
+    setDays(newDays);
+
+
+  };
+
   const renderDays = () => {
     const views = [];
 
     for (let i = 0; i < item.day.hours.length; i++) {
       views.push(
-        <TouchableOpacity key={i} onPress={() => markDay(i)}>
+        <TouchableOpacity key={i} onPress={() => markDay(i)} onLongPress={() => desmarkHour(i)}>
           <Text
             style={{
               ...styles.texto,
@@ -58,5 +81,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 4,
     padding: 2,
+    fontFamily: "Inter_400Regular",
   },
 });

@@ -4,26 +4,37 @@ import {
   Text,
   Image,
   TouchableHighlight,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
+import { Inter_700Bold, useFonts } from "expo-font";
 
 export function DayHeader(props) {
   const { item } = props;
   if (item.day === undefined) return;
 
+let [fontsLoaded] = useFonts({
+    Inter_700Bold,
+  });
+
   const days = item.days;
   const dayIndex = item.dayIndex;
   const setDays = item.setDays;
-  const [initialBool, setInitialBool] = useState(true);
 
   const markDay = () => {
     let newDays = [...days];
 
+    let trueCount = 0;
+
+
     for (let x = 0; x < newDays[dayIndex].hoursMarked.length; x++) {
-      newDays[dayIndex].hoursMarked[x] = initialBool;
+      if(newDays[dayIndex].hoursMarked[x]) trueCount++;
     }
 
-    setInitialBool(!initialBool);
+    for (let x = 0; x < newDays[dayIndex].hoursMarked.length; x++) {
+        if(trueCount > 15) newDays[dayIndex].hoursMarked[x] = false;
+        else newDays[dayIndex].hoursMarked[x] = true;
+    }
 
     setDays(newDays);
   };
@@ -31,17 +42,17 @@ export function DayHeader(props) {
   const dayString = item.day.date.toDateString();
 
   const diaArray = dayString.split(" ");
-  const diaAtual = `${diaArray[2]} of ${diaArray[1]}`;
+  const diaAtual = `${diaArray[2]} de ${getMonth(diaArray[1])}`;
 
   return (
-    <TouchableHighlight style={styles.container} onPress={markDay}>
+    <TouchableOpacity style={styles.container} onPress={markDay}>
       <>
         <Text style={{ ...styles.texto, fontSize: 16 }}>
           {getDayOfWeek(dayString.split(" ")[0])}
         </Text>
         <Text style={styles.texto}>{diaAtual}</Text>
       </>
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 }
 
@@ -101,6 +112,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   texto: {
+    fontFamily: "Inter_700Bold",
     fontSize: 9,
     color: "#0095FF",
   },

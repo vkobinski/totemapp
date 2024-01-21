@@ -75,7 +75,6 @@ export function Cadastrar(props) {
     if (pacientes.length > 0) {
       setPacientes((prevPacientes) => {
         return prevPacientes.map((paciente) => {
-          console.log(paciente);
           paciente["title"] =
             paciente["nomeCompleto"] +
             " " +
@@ -144,7 +143,6 @@ export function Cadastrar(props) {
           getHorarioFormatado(horarioConsulta),
       })
       .then((response) => {
-        console.log(response.data);
         if (response.status === 404) {
           setTextoBotao("Paciente não encontrado");
           setButtonColor(buttonRed);
