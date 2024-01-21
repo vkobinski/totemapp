@@ -7,7 +7,7 @@ export default function Dia({style, item, dayIndex, daysTotal}) {
 
     return (
         <View style={{
-            ...style, // apply calculated styles, be careful not to override these accidentally (unless you know what you are doing)
+            ...style, 
             backgroundColor: 'red',
             borderRadius: 10,
             elevation: 5,
