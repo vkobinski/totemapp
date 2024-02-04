@@ -32,6 +32,8 @@ export default function App() {
   const [cadastrarPaciente, setCadastrarPaciente] = useState(false);
   const [finalStatus, setFinalStatus] = useState();
 
+  const mostrarCalendario = true;
+
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -73,10 +75,9 @@ export default function App() {
     //</Calendario>
     //);
 
-    if(!loggedIn) {
-
+    if (!loggedIn) {
       return (
-       <Login
+        <Login
           setLoggedIn={setLoggedIn}
           setUserId={setUserId}
           password={password}
@@ -86,17 +87,21 @@ export default function App() {
           token={expoPushToken}
           setToken={setExpoPushToken}
         />
-
       );
     } else {
       return (
-
- <Tab.Navigator screenOptions={{headerShown: false}}>
-            <Tab.Screen name="Consultas" component={MainView} initialParams={{userId: userId}}/>
-            <Tab.Screen name="Paciente" component={CadastrarPaciente} />
-            <Tab.Screen name="Agendar" component={Cadastrar} />
+        <Tab.Navigator screenOptions={{ headerShown: false }}>
+          <Tab.Screen
+            name="Consultas"
+            component={MainView}
+            initialParams={{ userId: userId }}
+          />
+          <Tab.Screen name="Paciente" component={CadastrarPaciente} />
+          <Tab.Screen name="Agendar" component={Cadastrar} />
+          {mostrarCalendario && (
             <Tab.Screen name="Calendário" component={Calendario} />
-          </Tab.Navigator>
+          )}
+        </Tab.Navigator>
       );
     }
 
@@ -109,13 +114,13 @@ export default function App() {
           setCadastrarPaciente={setCadastrarPaciente}
         />
       );
-    };
-  }
+    }
+  };
 
   const normalTheme = {
     ...DefaultTheme,
     dark: false,
-    colors:{
+    colors: {
       ...DefaultTheme.colors,
       background: "transparent",
     },
@@ -129,7 +134,6 @@ export default function App() {
             {renderContent()}
             <StatusBar />
           </View>
-         
         </AutocompleteDropdownContextProvider>
       </NavigationContainer>
     </>

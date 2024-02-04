@@ -161,6 +161,7 @@ export function Cadastrar(props) {
     if (item == null) return;
     item["title"] = item["nomeCompleto"];
     setSelectedItem(item);
+    setDataNascimentoPaciente(item["dataNascimento"]);
   };
 
   return (

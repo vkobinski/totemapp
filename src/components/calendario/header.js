@@ -26,7 +26,6 @@ let [fontsLoaded] = useFonts({
 
     let trueCount = 0;
 
-
     for (let x = 0; x < newDays[dayIndex].hoursMarked.length; x++) {
       if(newDays[dayIndex].hoursMarked[x]) trueCount++;
     }

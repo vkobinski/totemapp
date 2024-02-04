@@ -15,6 +15,7 @@ let [fontsLoaded] = useFonts({
   const days = item.days;
   const dayIndex = item.dayIndex;
   const setDays = item.setDays;
+  const hours = item.hours;
 
   const markDay = (index) => {
     let newDays = [...days];
@@ -47,7 +48,7 @@ let [fontsLoaded] = useFonts({
   const renderDays = () => {
     const views = [];
 
-    for (let i = 0; i < item.day.hours.length; i++) {
+    for (let i = 0; i < hours.length; i++) {
       views.push(
         <TouchableOpacity key={i} onPress={() => markDay(i)} onLongPress={() => desmarkHour(i)}>
           <Text
@@ -57,7 +58,7 @@ let [fontsLoaded] = useFonts({
                 item.day.hoursMarked[i] == true ? "#DDFCCE" : "transparent",
             }}
           >
-            {item.day.hours[i]}
+            {hours[i]}
           </Text>
         </TouchableOpacity>
       );
