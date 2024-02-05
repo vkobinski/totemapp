@@ -6,6 +6,8 @@ import {
   TextInput,
   Button,
   TouchableHighlight,
+  RefreshControl,
+  TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -27,9 +29,13 @@ export function Calendario(props) {
   const [days, setDays] = useState([]);
   const [hours, setHours] = useState([]);
   const [serverGet, setServerGet] = useState(false);
+  const [from, setFrom] = useState(moment().add(1, "days").toDate());
+  const [till, setTill] = useState(moment().add(8, "days").toDate());
+  const [renderViews, setRenderViews] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [from] = React.useState(moment().add(1, "days").toDate());
-  const [till] = React.useState(moment().add(8, "days").toDate());
+  const setaEsquerda = require("../../../assets/seta-esquerda.png");
+  const setaDireita = require("../../../assets/seta-direita.png");
 
   const generateHours = () => {
     const startTime = 7 * 60;
@@ -49,13 +55,35 @@ export function Calendario(props) {
     setHours(newHours);
   };
 
-  const generateDays = () => {
+  const diminuirSemana = () => {
+    setTill(moment(from).toDate());
+    setFrom(moment(from).subtract(7, "days").toDate());
+    setServerGet(false);
+  };
+
+  const aumentarSemana = () => {
+    setFrom(moment(till).toDate());
+    setTill(moment(till).add(7, "days").toDate());
+    setServerGet(false);
+  };
+
+  const generateDays = async () => {
+
+    setRefreshing(true);
+
     if (hours.length <= 0) return;
 
     let cur = from;
+    let to = till;
     const newDays = [];
 
     do {
+      if (cur.getDay() == 0) {
+        cur = moment(cur).add(1, "days").toDate();
+        to = moment(to).add(1, "days").toDate();
+        continue;
+      }
+
       let newDay = {
         date: cur,
         hoursMarked: [],
@@ -68,7 +96,7 @@ export function Calendario(props) {
       newDays.push(newDay);
 
       cur = moment(cur).add(1, "days").toDate();
-    } while (cur.getDay() !== till.getDay());
+    } while (cur.getDate() !== to.getDate());
 
     setDays(newDays);
   };
@@ -79,22 +107,25 @@ export function Calendario(props) {
 
   useEffect(() => {
     generateDays();
-  }, [hours]);
+  }, [hours, till]);
 
   useEffect(() => {
-    getApiDays();
-  }, [days, serverGet]);
+      getApiDays();
+  }, [days]);
 
   useFocusEffect(
     React.useCallback(() => {
-        setServerGet(false);
-      return () => {
-      };
+      setServerGet(false);
+      setFrom(moment().add(1, "days").toDate());
+      setTill(moment().add(8, "days").toDate());
+
+      return () => {};
     }, [])
   );
 
   const renderDays = () => {
     let cur = from;
+    let to = till;
 
     const views = [];
     const daysViews = [];
@@ -127,7 +158,7 @@ export function Calendario(props) {
       i++;
 
       cur = moment(cur).add(1, "days").toDate();
-    } while (cur.getDay() !== till.getDay());
+    } while (cur.getDate() !== to.getDate());
 
     return {
       views: views,
@@ -135,7 +166,9 @@ export function Calendario(props) {
     };
   };
 
-  const renderViews = renderDays();
+  useEffect(() => {
+    setRenderViews(() => renderDays());
+  }, [days]);
 
   const salvarHorarios = async () => {
     const sendValue = [];
@@ -166,8 +199,7 @@ export function Calendario(props) {
 
       if (currentDayVal.length > 0)
         sendValue.push({ dia: formattedDate, horarios: currentDayVal });
-      else 
-        sendValue.push({ dia: formattedDate, horarios: [] });
+      else sendValue.push({ dia: formattedDate, horarios: [] });
     }
 
     const user = await AsyncStorage.getItem("user");
@@ -199,19 +231,17 @@ export function Calendario(props) {
 
     days.forEach((d) => dayList.push(formatDate(d.date)));
 
-    console.log(dayList);
-
     if (dayList.length <= 0) return;
 
     const user = await AsyncStorage.getItem("user");
-
-    setServerGet(true);
 
     await axios
       .post(utils.getData("/api/v1/disponibilidade/getList/" + user), dayList)
       .then((response) => {
         processApiDays(response.data);
       });
+    setServerGet(true);
+    setRefreshing(false);
   };
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
@@ -260,10 +290,7 @@ export function Calendario(props) {
             diaApiAtual
           )
         ) {
-
-          console.log(element);
-
-          if(element["atendimento"]) marked[i] = "atendimento";
+          if (element["atendimento"]) marked[i] = "atendimento";
           else marked[i] = true;
         }
       }
@@ -281,11 +308,36 @@ export function Calendario(props) {
       </View>
 
       <View style={styles.containerCentral}>
-        <View style={{ ...styles.daysContainer, backgroundColor: "#f2f2f2" }}>
-          {renderViews.views}
+        <View style={styles.botoesTitulo}>
+          <TouchableOpacity
+            style={styles.botoesSeta}
+            onPress={diminuirSemana}
+            //disabled={refreshing}
+          >
+            <Image style={styles.botoesImagem} source={setaEsquerda} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.botoesSeta}
+            onPress={aumentarSemana}
+            //disabled={refreshing}
+          >
+            <Image style={styles.botoesImagem} source={setaDireita} />
+          </TouchableOpacity>
         </View>
-        <ScrollView style={styles.scroll}>
-          <View style={styles.daysContainer}>{renderViews.days}</View>
+
+        <View style={{ ...styles.daysContainer, backgroundColor: "#f2f2f2" }}>
+          {renderViews !== null ? renderViews.views : <></>}
+        </View>
+        <ScrollView style={styles.scroll}
+          refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+          />
+        }
+        >
+          <View style={styles.daysContainer}>
+            {renderViews !== null ? renderViews.days : <></>}
+          </View>
         </ScrollView>
 
         <TouchableHighlight
@@ -316,6 +368,20 @@ const styles = StyleSheet.create({
     width: 40,
     height: 50,
   },
+  botoesTitulo: {
+    flexDirection: "row",
+    height: 50,
+    width: "100%",
+    justifyContent: "space-between",
+  },
+
+  botoesImagem: {
+    marginHorizontal: 10,
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+  },
+
   botoesInferiores: {
     width: 40,
     height: 50,
@@ -343,7 +409,7 @@ const styles = StyleSheet.create({
   },
   containerCentral: {
     alignItems: "center",
-    top: 200,
+    top: 180,
     width: "100%",
     paddingTop: 10,
     paddingBottom: 10,
