@@ -23,8 +23,8 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import { useFocusEffect } from "@react-navigation/native";
 
-export function MainView({route}) {
-  const {userId} = route.params;
+export function MainView(props) {
+  const { userId, deslogFunction } = props;
   //const deslogFunction = props["deslogFunction"];
   //const setCadastrar = props["setCadastrar"];
   //const setCadastrarPaciente = props["setCadastrarPaciente"];
@@ -53,7 +53,7 @@ export function MainView({route}) {
   const [imageToShow, setImageToShow] = useState(null);
   const [openDate, setOpenDate] = useState(false);
   const [dayToShow, setDayToShow] = useState(new Date());
-  const [swipe, setSwipe] = useState('');
+  const [swipe, setSwipe] = useState("");
 
   //const checkSendNotification = () => {
   //  axios
@@ -88,8 +88,7 @@ export function MainView({route}) {
   useFocusEffect(
     React.useCallback(() => {
       setDayToShow(new Date());
-      return () => {
-      };
+      return () => {};
     }, [])
   );
 
@@ -148,24 +147,21 @@ export function MainView({route}) {
 
   const pedePermissao = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
-    if(status === "denied") 
-      alert("As notificações estão desligadas pois foram recusadas quando o aplicativo abriu a primeira vez! Para ativá-las vá para as configurações ou reinstale o aplicativo.")
+    if (status === "denied")
+      alert(
+        "As notificações estão desligadas pois foram recusadas quando o aplicativo abriu a primeira vez! Para ativá-las vá para as configurações ou reinstale o aplicativo."
+      );
   };
 
   useFocusEffect(
     React.useCallback(() => {
       fetchAtendimentos();
 
-      return () => {
-  
-      };
+      return () => {};
     }, [])
   );
 
-
-
   useEffect(() => {
-
     pedePermissao();
   }, []);
 
@@ -216,7 +212,6 @@ export function MainView({route}) {
     setNotificacao(notificacao + 1);
   }
 
-
   const verPaciente = (novaImagem) => {
     setShowImage(true);
     setImageToShow(novaImagem);
@@ -240,7 +235,6 @@ export function MainView({route}) {
 
   const user = require("../../assets/user.png");
 
-
   return (
     <SafeAreaProvider>
       {showImage === true ? (
@@ -253,9 +247,11 @@ export function MainView({route}) {
           />
         </>
       ) : null}
-      <View style={styles.circle}>
-        <Image style={styles.imagem} source={logo} />
-      </View>
+      <TouchableOpacity onPress={deslogFunction}>
+        <View style={styles.circle}>
+          <Image style={styles.imagem} source={logo} />
+        </View>
+      </TouchableOpacity>
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -265,7 +261,6 @@ export function MainView({route}) {
         }
         style={styles.scrollview}
       >
-
         <View style={styles.botoesTitulo}>
           <TouchableOpacity
             style={styles.botoesSeta}
@@ -320,15 +315,15 @@ export function MainView({route}) {
         </View>
       </ScrollView>
       {/* <View style={styles.containerBotoesInferiores}> */}
-        {/* <TouchableOpacity style={styles.botoesInferiores} onPress={deslogar}> */}
-          {/* <Image style={styles.imagemDeslogar} source={deslogarImagem} /> */}
-        {/* </TouchableOpacity> */}
-        {/* <TouchableOpacity style={styles.botoesInferiores} onPress={() => setCadastrar(true)}> */}
-          {/* <Image style={styles.imagemCadastrar} source={addUser} /> */}
-        {/* </TouchableOpacity> */}
-        {/* <TouchableOpacity style={styles.botoesInferiores} onPress={() => setCadastrarPaciente(true)} > */}
-          {/* <Image style={styles.imagemCadastrarPaciente} source={cadastrarPacienteImagem} /> */}
-        {/* </TouchableOpacity> */}
+      {/* <TouchableOpacity style={styles.botoesInferiores} onPress={deslogar}> */}
+      {/* <Image style={styles.imagemDeslogar} source={deslogarImagem} /> */}
+      {/* </TouchableOpacity> */}
+      {/* <TouchableOpacity style={styles.botoesInferiores} onPress={() => setCadastrar(true)}> */}
+      {/* <Image style={styles.imagemCadastrar} source={addUser} /> */}
+      {/* </TouchableOpacity> */}
+      {/* <TouchableOpacity style={styles.botoesInferiores} onPress={() => setCadastrarPaciente(true)} > */}
+      {/* <Image style={styles.imagemCadastrarPaciente} source={cadastrarPacienteImagem} /> */}
+      {/* </TouchableOpacity> */}
       {/* </View> */}
     </SafeAreaProvider>
   );
@@ -348,12 +343,11 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "space-around",
   },
-  botoesSeta: {
-  },
+  botoesSeta: {},
   botoesImagem: {
     width: 40,
     height: 40,
-    resizeMode: 'contain'
+    resizeMode: "contain",
   },
   texto: {
     alignSelf: "center",

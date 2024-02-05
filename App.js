@@ -12,6 +12,7 @@ import * as Device from "expo-device";
 import { Calendario } from "./src/components/calendario/grid";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const usePushNotifications = Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -41,8 +42,10 @@ export default function App() {
 
   const Tab = createBottomTabNavigator();
 
-  const deslogFunction = () => {
+  const deslogFunction = async () => {
     setLoggedIn(false);
+
+    await AsyncStorage.removeItem("user");
   };
 
   useEffect(() => {
@@ -91,11 +94,9 @@ export default function App() {
     } else {
       return (
         <Tab.Navigator screenOptions={{ headerShown: false }}>
-          <Tab.Screen
-            name="Consultas"
-            component={MainView}
-            initialParams={{ userId: userId }}
-          />
+          <Tab.Screen name="Consultas">
+            {() => <MainView deslogFunction={deslogFunction} userId={userId} />}
+          </Tab.Screen>
           <Tab.Screen name="Paciente" component={CadastrarPaciente} />
           <Tab.Screen name="Agendar" component={Cadastrar} />
           {mostrarCalendario && (

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Up Consultórios",
     "slug": "totem",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icone.png",
     "userInterfaceStyle": "light",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kodev.uptotem",
-      "buildNumber": "38",
+      "buildNumber": "39",
       "infoPlist": {
         "NSAppTransportSecurity": "Esse app usa requisições HTTP.",
         "NSAllowsArbitraryLoads": "Requisições HTTP"
