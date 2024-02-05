@@ -16,6 +16,8 @@ import { DayHeader } from "./header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import utils from "../../singletons/Utils";
+import { useLastNotificationResponse } from "expo-notifications";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function Calendario(props) {
   const setCadastrar = props["setCadastrar"];
@@ -24,6 +26,7 @@ export function Calendario(props) {
 
   const [days, setDays] = useState([]);
   const [hours, setHours] = useState([]);
+  const [serverGet, setServerGet] = useState(false);
 
   const [from] = React.useState(moment().add(1, "days").toDate());
   const [till] = React.useState(moment().add(8, "days").toDate());
@@ -77,6 +80,19 @@ export function Calendario(props) {
   useEffect(() => {
     generateDays();
   }, [hours]);
+
+  useEffect(() => {
+    getApiDays();
+  }, [days, serverGet]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+        setServerGet(false);
+      return () => {
+      };
+    }, [])
+  );
+
   const renderDays = () => {
     let cur = from;
 
@@ -125,7 +141,6 @@ export function Calendario(props) {
     const sendValue = [];
 
     for (let j = 0; j < days.length; j++) {
-
       const dia = days[j].date;
 
       const currentDayVal = [];
@@ -133,31 +148,130 @@ export function Calendario(props) {
       for (let index = 0; index < days[j].hoursMarked.length; index++) {
         const horario = days[j].hoursMarked[index];
         const horarioValor = hours[index];
-        
-        if(horario && currentDayVal.length == 0) currentDayVal.push(horarioValor);
-        else if(!horario && days[j].hoursMarked[index-1]) currentDayVal.push(hours[index-1]);
-        else if(horario && !days[j].hoursMarked[index-1]) currentDayVal.push(hours[index]);
-        else if(horario && index == days[j].hoursMarked.length-1) currentDayVal.push(hours[index]);
+
+        if (horario && currentDayVal.length == 0)
+          currentDayVal.push(horarioValor);
+        else if (!horario && days[j].hoursMarked[index - 1])
+          currentDayVal.push(hours[index - 1]);
+        else if (horario && !days[j].hoursMarked[index - 1])
+          currentDayVal.push(hours[index]);
+        else if (horario && index == days[j].hoursMarked.length - 1)
+          currentDayVal.push(hours[index]);
       }
-
-
 
       var day = dia.getDate();
       var month = dia.getMonth() + 1;
       var year = dia.getFullYear();
       var formattedDate = `${day}/${month}/${year}`;
 
-      if(currentDayVal.length > 0) sendValue.push({ "dia": formattedDate, "horarios": currentDayVal });
+      if (currentDayVal.length > 0)
+        sendValue.push({ dia: formattedDate, horarios: currentDayVal });
+      else 
+        sendValue.push({ dia: formattedDate, horarios: [] });
     }
-
-    console.log(sendValue);
 
     const user = await AsyncStorage.getItem("user");
 
-    await axios.post(utils.getData("/api/v1/disponibilidade/" + user), sendValue).then((response) => {
-      console.log(response);
+    await axios
+      .post(utils.getData("/api/v1/disponibilidade/" + user), sendValue)
+      .then((response) => {
+        processApiDays(response.data);
+      });
+  };
+
+  const getByDate = (date) => {
+    for (let i = 0; i < days.length; i++) {
+      if (days[i].date.getDate() == date.getDate()) return i;
+    }
+  };
+
+  const formatDate = (date) => {
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const getApiDays = async () => {
+    const dayList = [];
+
+    if (serverGet) return;
+
+    days.forEach((d) => dayList.push(formatDate(d.date)));
+
+    console.log(dayList);
+
+    if (dayList.length <= 0) return;
+
+    const user = await AsyncStorage.getItem("user");
+
+    setServerGet(true);
+
+    await axios
+      .post(utils.getData("/api/v1/disponibilidade/getList/" + user), dayList)
+      .then((response) => {
+        processApiDays(response.data);
+      });
+  };
+
+  const isTimeBetween = (startH, startM, endH, endM, target, day) => {
+    const startDate = new Date(day.getDate());
+    startDate.setHours(startH);
+    startDate.setMinutes(startM);
+
+    const targetDate = new Date(day.getDate());
+    targetDate.setHours(target.split(":")[0]);
+    targetDate.setMinutes(target.split(":")[1]);
+
+    const endDate = new Date(day.getDate());
+    endDate.setHours(endH);
+    endDate.setMinutes(endM);
+
+    return startDate <= targetDate && targetDate <= endDate;
+  };
+
+  const getAllMarkedFalse = () => {
+    const marked = [...days[0].hoursMarked];
+    let newDays = [...days];
+
+    for (let i = 0; i < marked.length; i++) marked[i] = false;
+    for (let i = 0; i < days.length; i++) newDays[i].hoursMarked = [...marked];
+
+    return newDays;
+  };
+
+  const processApiDays = (data) => {
+    let newDays = getAllMarkedFalse();
+
+    data.forEach((element) => {
+      const diaApiAtual = new Date(element["dia"]);
+      const pos = getByDate(diaApiAtual);
+
+      marked = [...days[pos].hoursMarked];
+
+      for (let i = 0; i < marked.length; i++) {
+        if (
+          isTimeBetween(
+            element["horaInicio"],
+            element["minutoInicio"],
+            element["horaFim"],
+            element["minutoFim"],
+            hours[i],
+            diaApiAtual
+          )
+        ) {
+
+          console.log(element);
+
+          if(element["atendimento"]) marked[i] = "atendimento";
+          else marked[i] = true;
+        }
+      }
+
+      newDays[pos].hoursMarked = marked;
     });
 
+    setDays(newDays);
   };
 
   return (

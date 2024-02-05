@@ -21,7 +21,7 @@ let [fontsLoaded] = useFonts({
   const dayIndex = item.dayIndex;
   const setDays = item.setDays;
 
-  const markDay = () => {
+  const markDay = async () => {
     let newDays = [...days];
 
     let trueCount = 0;

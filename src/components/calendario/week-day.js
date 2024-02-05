@@ -17,7 +17,7 @@ let [fontsLoaded] = useFonts({
   const setDays = item.setDays;
   const hours = item.hours;
 
-  const markDay = (index) => {
+  const markDay = async (index) => {
     let newDays = [...days];
 
     newDays[dayIndex].hoursMarked[index] =
@@ -26,7 +26,7 @@ let [fontsLoaded] = useFonts({
     setDays(newDays);
   };
 
-  const desmarkHour = (index) => {
+  const desmarkHour = async (index) => {
     let newDays = [...days];
 
     let trueCount = 0;
@@ -45,6 +45,15 @@ let [fontsLoaded] = useFonts({
 
   };
 
+  const getColor = (value) => {
+
+    if(value == true) return "#DDFCCE";
+    if(value == "atendimento") return "#FFF1A6";
+
+    return "transparent";
+
+  };
+
   const renderDays = () => {
     const views = [];
 
@@ -55,7 +64,7 @@ let [fontsLoaded] = useFonts({
             style={{
               ...styles.texto,
               backgroundColor:
-                item.day.hoursMarked[i] == true ? "#DDFCCE" : "transparent",
+                getColor(item.day.hoursMarked[i])
             }}
           >
             {hours[i]}

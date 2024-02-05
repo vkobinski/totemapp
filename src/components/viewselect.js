@@ -85,6 +85,14 @@ export function MainView({route}) {
   //    });
   //};
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setDayToShow(new Date());
+      return () => {
+      };
+    }, [])
+  );
+
   const fetchAtendimentos = () => {
     setRefreshing(true);
     axios

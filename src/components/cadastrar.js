@@ -15,7 +15,7 @@ import {
 } from "@expo-google-fonts/inter";
 import React, { useRef, useState } from "react";
 import DatePicker from "react-native-date-picker";
-import axios from "axios";
+import axios, { HttpStatusCode } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import utils from "../singletons/Utils";
 import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
@@ -79,7 +79,7 @@ export function Cadastrar(props) {
             paciente["nomeCompleto"] +
             " " +
             convertDate(paciente["dataNascimento"]);
-  
+
           return paciente;
         });
       });
@@ -132,7 +132,7 @@ export function Cadastrar(props) {
       return;
     }
 
-    axios
+    await axios
       .postForm(utils.getData("/api/v1/atendimento/app/form"), {
         userId: await AsyncStorage.getItem("user"),
         nomePaciente: selectedItem["nomeCompleto"],
@@ -143,6 +143,13 @@ export function Cadastrar(props) {
           getHorarioFormatado(horarioConsulta),
       })
       .then((response) => {
+        if (
+          response.status == HttpStatusCode.BadRequest &&
+          response.data.contains("detail")
+        ) {
+          if (response.data["detail"] == "ocupado") {
+          }
+        }
         if (response.status === 404) {
           setTextoBotao("Paciente não encontrado");
           setButtonColor(buttonRed);
@@ -152,8 +159,12 @@ export function Cadastrar(props) {
         }
       })
       .catch((error) => {
+        if (error.response.status == 400)
+          setTextoBotao("Horário está ocupado!");
+        else 
+          setTextoBotao("Erro ao Cadastrar!");
+
         setButtonColor(buttonRed);
-        setTextoBotao("Erro ao Cadastrar!");
       });
   };
 
