@@ -69,8 +69,6 @@ export function Calendario(props) {
 
   const generateDays = async () => {
 
-    setRefreshing(true);
-
     if (hours.length <= 0) return;
 
     let cur = from;
@@ -115,7 +113,7 @@ export function Calendario(props) {
 
   useFocusEffect(
     React.useCallback(() => {
-      setServerGet(false);
+      setServerGet(true);
       setFrom(moment().add(1, "days").toDate());
       setTill(moment().add(8, "days").toDate());
 
@@ -233,6 +231,8 @@ export function Calendario(props) {
 
     if (dayList.length <= 0) return;
 
+    setRefreshing(true);
+
     const user = await AsyncStorage.getItem("user");
 
     await axios
@@ -312,14 +312,14 @@ export function Calendario(props) {
           <TouchableOpacity
             style={styles.botoesSeta}
             onPress={diminuirSemana}
-            //disabled={refreshing}
+            disabled={refreshing}
           >
             <Image style={styles.botoesImagem} source={setaEsquerda} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.botoesSeta}
             onPress={aumentarSemana}
-            //disabled={refreshing}
+            disabled={refreshing}
           >
             <Image style={styles.botoesImagem} source={setaDireita} />
           </TouchableOpacity>
@@ -329,11 +329,6 @@ export function Calendario(props) {
           {renderViews !== null ? renderViews.views : <></>}
         </View>
         <ScrollView style={styles.scroll}
-          refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-          />
-        }
         >
           <View style={styles.daysContainer}>
             {renderViews !== null ? renderViews.days : <></>}

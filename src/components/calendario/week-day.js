@@ -47,7 +47,7 @@ let [fontsLoaded] = useFonts({
 
   const getColor = (value) => {
 
-    if(value == true) return "#DDFCCE";
+    if(value == true) return "#FCCECE";
     if(value == "atendimento") return "#FFF1A6";
 
     return "transparent";
