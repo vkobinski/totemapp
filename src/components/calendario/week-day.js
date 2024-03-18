@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from "react-native";
 import { DayHeader } from "./header";
 import { useState } from "react";
 import { useFonts, Inter_400Regular } from "expo-font";
@@ -59,7 +59,7 @@ let [fontsLoaded] = useFonts({
 
     for (let i = 0; i < hours.length; i++) {
       views.push(
-        <TouchableOpacity key={i} onPress={() => markDay(i)} onLongPress={() => desmarkHour(i)}>
+        <TouchableHighlight key={i} onPress={() => markDay(i)} onLongPress={() => desmarkHour(i)}>
           <Text
             style={{
               ...styles.texto,
@@ -69,7 +69,7 @@ let [fontsLoaded] = useFonts({
           >
             {hours[i]}
           </Text>
-        </TouchableOpacity>
+        </TouchableHighlight>
       );
     }
 

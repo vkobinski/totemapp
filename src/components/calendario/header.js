@@ -44,14 +44,14 @@ let [fontsLoaded] = useFonts({
   const diaAtual = `${diaArray[2]} de ${getMonth(diaArray[1])}`;
 
   return (
-    <TouchableOpacity style={styles.container} onPress={markDay}>
+    <TouchableHighlight style={styles.container} onPress={markDay}>
       <>
         <Text style={{ ...styles.texto, fontSize: 16 }}>
           {getDayOfWeek(dayString.split(" ")[0])}
         </Text>
         <Text style={styles.texto}>{diaAtual}</Text>
       </>
-    </TouchableOpacity>
+    </TouchableHighlight>
   );
 }
 

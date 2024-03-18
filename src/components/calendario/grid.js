@@ -113,7 +113,7 @@ export function Calendario(props) {
 
   useFocusEffect(
     React.useCallback(() => {
-      setServerGet(true);
+      setServerGet(false);
       setFrom(moment().add(1, "days").toDate());
       setTill(moment().add(8, "days").toDate());
 
@@ -213,6 +213,8 @@ export function Calendario(props) {
     for (let i = 0; i < days.length; i++) {
       if (days[i].date.getDate() == date.getDate()) return i;
     }
+
+    return -1;
   };
 
   const formatDate = (date) => {
@@ -273,9 +275,14 @@ export function Calendario(props) {
   const processApiDays = (data) => {
     let newDays = getAllMarkedFalse();
 
+    alert(data);
+    alert(data.length);
+
     data.forEach((element) => {
       const diaApiAtual = new Date(element["dia"]);
       const pos = getByDate(diaApiAtual);
+
+      if(pos == -1) return;
 
       marked = [...days[pos].hoursMarked];
 

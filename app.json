@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kodev.uptotem",
-      "buildNumber": "47",
+      "buildNumber": "48",
       "infoPlist": {
         "NSAppTransportSecurity": "Esse app usa requisições HTTP.",
         "NSAllowsArbitraryLoads": "Requisições HTTP"
