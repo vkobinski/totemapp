@@ -83,3 +83,4 @@ android/*
 eas.json
 credentials.json
 package-lock.json
+google-services.json
