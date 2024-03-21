@@ -37,7 +37,7 @@ export function Calendario(props) {
   const setaEsquerda = require("../../../assets/seta-esquerda.png");
   const setaDireita = require("../../../assets/seta-direita.png");
 
-  const generateHours = () => {
+  const generateHours = React.useCallback(() => {
     const startTime = 7 * 60;
     const endTime = 21 * 60;
     const interval = 30;
@@ -53,7 +53,7 @@ export function Calendario(props) {
     }
 
     setHours(newHours);
-  };
+  }, []);
 
   const diminuirSemana = () => {
     setTill(moment(from).toDate());
@@ -67,7 +67,7 @@ export function Calendario(props) {
     setServerGet(false);
   };
 
-  const generateDays = async () => {
+  const generateDays = React.useCallback(async () => {
 
     if (hours.length <= 0) return;
 
@@ -97,7 +97,7 @@ export function Calendario(props) {
     } while (cur.getDate() !== to.getDate());
 
     setDays(newDays);
-  };
+  }, [hours, till]);
 
   useEffect(() => {
     generateHours();
@@ -121,7 +121,7 @@ export function Calendario(props) {
     }, [])
   );
 
-  const renderDays = () => {
+  const renderDays = React.useCallback(() => {
     let cur = from;
     let to = till;
 
@@ -158,17 +158,17 @@ export function Calendario(props) {
       cur = moment(cur).add(1, "days").toDate();
     } while (cur.getDate() !== to.getDate());
 
-    return {
+    setRenderViews( {
       views: views,
       days: daysViews,
-    };
-  };
+    });
+  }, [days, hours]);
 
   useEffect(() => {
-    setRenderViews(() => renderDays());
+    renderDays();
   }, [days]);
 
-  const salvarHorarios = async () => {
+  const salvarHorarios = React.useCallback(async () => {
     const sendValue = [];
 
     for (let j = 0; j < days.length; j++) {
@@ -207,15 +207,15 @@ export function Calendario(props) {
       .then((response) => {
         processApiDays(response.data);
       });
-  };
+  }, [days, hours]);
 
-  const getByDate = (date) => {
+  const getByDate = React.useCallback((date) => {
     for (let i = 0; i < days.length; i++) {
       if (days[i].date.getDate() == date.getDate()) return i;
     }
 
     return -1;
-  };
+  }, [days]);
 
   const formatDate = (date) => {
     var day = date.getDate();
@@ -224,7 +224,7 @@ export function Calendario(props) {
     return `${day}/${month}/${year}`;
   };
 
-  const getApiDays = async () => {
+  const getApiDays = React.useCallback(async () => {
     const dayList = [];
 
     if (serverGet) return;
@@ -244,7 +244,7 @@ export function Calendario(props) {
       });
     setServerGet(true);
     setRefreshing(false);
-  };
+  }, [days]);
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
     const startDate = new Date(day.getDate());
@@ -262,7 +262,7 @@ export function Calendario(props) {
     return startDate <= targetDate && targetDate <= endDate;
   };
 
-  const getAllMarkedFalse = () => {
+  const getAllMarkedFalse = React.useCallback(() => {
     const marked = [...days[0].hoursMarked];
     let newDays = [...days];
 
@@ -270,13 +270,15 @@ export function Calendario(props) {
     for (let i = 0; i < days.length; i++) newDays[i].hoursMarked = [...marked];
 
     return newDays;
-  };
+  }, [days]);
 
-  const processApiDays = (data) => {
+  const processApiDays = React.useCallback((data) => {
     let newDays = getAllMarkedFalse();
+    
+    if(serverGet) return;
 
-    alert(data);
-    alert(data.length);
+    console.log(data);
+    //alert(data.length);
 
     data.forEach((element) => {
       const diaApiAtual = new Date(element["dia"]);
@@ -306,7 +308,7 @@ export function Calendario(props) {
     });
 
     setDays(newDays);
-  };
+  }, [days]);
 
   return (
     <SafeAreaProvider style={styles.container}>
