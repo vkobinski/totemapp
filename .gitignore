@@ -1,3 +1,8 @@
+./
+eas.json
+credentials.json
+package-lock.json
+
 node_modules/
 .expo/
 dist/
@@ -79,7 +84,3 @@ dist/
 
 android/
 android/*
-
-eas.json
-credentials.json
-package-lock.json
