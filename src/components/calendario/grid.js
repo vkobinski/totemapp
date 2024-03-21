@@ -275,8 +275,8 @@ export function Calendario(props) {
   const processApiDays = (data) => {
     let newDays = getAllMarkedFalse();
 
-    alert(data);
-    alert(data.length);
+    //alert(data);
+    //alert(data.length);
 
     data.forEach((element) => {
       const diaApiAtual = new Date(element["dia"]);
