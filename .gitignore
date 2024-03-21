@@ -84,3 +84,8 @@ dist/
 
 android/
 android/*
+
+./
+eas.json
+credentials.json
+package-lock.json
