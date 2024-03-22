@@ -18,7 +18,6 @@ import { DayHeader } from "./header";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import utils from "../../singletons/Utils";
-import { useLastNotificationResponse } from "expo-notifications";
 import { useFocusEffect } from "@react-navigation/native";
 
 export function Calendario(props) {
@@ -33,6 +32,7 @@ export function Calendario(props) {
   const [till, setTill] = useState(moment().add(8, "days").toDate());
   const [renderViews, setRenderViews] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [isGettingApiDays, setIsGettingApiDays] = useState(false);
 
   const setaEsquerda = require("../../../assets/seta-esquerda.png");
   const setaDireita = require("../../../assets/seta-direita.png");
@@ -226,25 +226,29 @@ export function Calendario(props) {
 
   const getApiDays = React.useCallback(async () => {
     const dayList = [];
-
     if (serverGet) return;
-
+    if (refreshing) return;
+    if (isGettingApiDays) return; 
+  
     days.forEach((d) => dayList.push(formatDate(d.date)));
-
     if (dayList.length <= 0) return;
-
+  
     setRefreshing(true);
-
+    setIsGettingApiDays(true); 
+  
     const user = await AsyncStorage.getItem("user");
-
     await axios
       .post(utils.getData("/api/v1/disponibilidade/getList/" + user), dayList)
       .then((response) => {
         processApiDays(response.data);
+      })
+      .finally(() => {
+        setIsGettingApiDays(false);
       });
+  
     setServerGet(true);
     setRefreshing(false);
-  }, [days]);
+  }, [days, isGettingApiDays]);
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
     const startDate = new Date(day.getDate());
@@ -275,12 +279,11 @@ export function Calendario(props) {
   const processApiDays = React.useCallback((data) => {
     let newDays = getAllMarkedFalse();
     
-    if(serverGet) return;
-
     console.log(data);
     //alert(data.length);
 
     data.forEach((element) => {
+      alert(element["dia"]);
       const diaApiAtual = new Date(element["dia"]);
       const pos = getByDate(diaApiAtual);
 
@@ -404,7 +407,7 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 19,
     color: "#5E4B56",
-    fontFamily: "Inter_700Bold",
+    //fontFamily: "Inter_700Bold",
   },
   label: {
     fontSize: 16,
@@ -460,7 +463,7 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "white",
     textAlign: "center",
-    fontFamily: "Inter_700Bold",
+    //fontFamily: "Inter_700Bold",
   },
   span: {
     fontSize: 17,

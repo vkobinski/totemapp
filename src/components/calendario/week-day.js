@@ -1,16 +1,16 @@
 import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from "react-native";
 import { DayHeader } from "./header";
 import { useState } from "react";
-import { useFonts, Inter_400Regular } from "expo-font";
+//import { useFonts, Inter_400Regular } from "expo-font";
 
 export default function WeekDay(props) {
   const { item } = props;
   if (item.day === undefined) return;
 
 
-let [fontsLoaded] = useFonts({
-    Inter_400Regular,
-  });
+//let [fontsLoaded] = useFonts({
+    //Inter_400Regular,
+  //});
 
   const days = item.days;
   const dayIndex = item.dayIndex;
@@ -91,6 +91,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 4,
     padding: 2,
-    fontFamily: "Inter_400Regular",
+    //fontFamily: "Inter_400Regular",
   },
 });

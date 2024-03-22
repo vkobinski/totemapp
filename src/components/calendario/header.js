@@ -7,15 +7,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { Inter_700Bold, useFonts } from "expo-font";
+//import { Inter_700Bold, useFonts } from "expo-font";
 
 export function DayHeader(props) {
   const { item } = props;
   if (item.day === undefined) return;
 
-let [fontsLoaded] = useFonts({
-    Inter_700Bold,
-  });
+//let [fontsLoaded] = useFonts({
+    //Inter_700Bold,
+  //});
 
   const days = item.days;
   const dayIndex = item.dayIndex;
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   texto: {
-    fontFamily: "Inter_700Bold",
+    //fontFamily: "Inter_700Bold",
     fontSize: 9,
     color: "#0095FF",
   },
