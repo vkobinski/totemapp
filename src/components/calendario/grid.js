@@ -284,6 +284,7 @@ export function Calendario(props) {
     let newDays = getAllMarkedFalse();
     
     console.log(data.length);
+    console.log("days: " , days);
     //alert(data.length);
 
     for(let array_size = 0; array_size <  data.length; array_size++ ) {
@@ -294,7 +295,6 @@ export function Calendario(props) {
       const pos = getByDate(diaApiAtual);
 
       console.log("DIA ATUAL API: ", diaApiAtual, " pos:" , pos);
-      //console.log("days: " , days);
 
       if(pos == -1) continue;
 
