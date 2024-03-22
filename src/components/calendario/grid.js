@@ -286,7 +286,8 @@ export function Calendario(props) {
     console.log(data);
     //alert(data.length);
 
-    data.forEach((element) => {
+    for(let x = 0; x <  data.length; x++ ) {
+      const element = data[x];
       const diaApiAtual = new Date(element["dia"]);
 
 
@@ -317,7 +318,7 @@ export function Calendario(props) {
       }
 
       newDays[pos].hoursMarked = marked;
-    });
+    }
 
     setDays(newDays);
   }, [days]);
