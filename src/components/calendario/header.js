@@ -6,8 +6,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-//import { Inter_700Bold, useFonts } from "expo-font";
+import React, { useState } from "react";
 
 export function DayHeader(props) {
   const { item } = props;
@@ -17,33 +16,11 @@ export function DayHeader(props) {
     //Inter_700Bold,
   //});
 
-  const [days, setInsideDays] = useState();
-  const [dayIndex, setDayIndex] = useState();
-  const [dayString, setDayString] = useState("");
-  const [diaArray, setDiaArray] = useState([]);
-  const [diaAtual, setDiaAtual] = useState("");
-
-  useEffect(() => {
-    setInsideDays(item.days);
-    setDayIndex(item.dayIndex);
-    setDayString(item.day.date.toDateString());
-
-
-  }, []);
-
-  useEffect(() => {
-    setDiaArray(dayString.split(" "));
-
-  }, [dayString]);
-
-  useEffect(() => {
-    setDiaAtual(`${diaArray[2]} de ${getMonth(diaArray[1])}`);
-
-  }, [diaArray]);
-
+  const days = item.days;
+  const dayIndex = item.dayIndex;
   const setDays = item.setDays;
 
-    const markDay = async () => {
+  const markDay = async () => {
     let newDays = [...days];
 
     let trueCount = 0;
@@ -59,6 +36,11 @@ export function DayHeader(props) {
 
     setDays(newDays);
   };
+
+  const dayString = item.day.date.toDateString();
+
+  const diaArray = dayString.split(" ");
+  const diaAtual = `${diaArray[2]} de ${getMonth(diaArray[1])}`;
 
   return (
     <TouchableHighlight style={styles.container} onPress={markDay}>
