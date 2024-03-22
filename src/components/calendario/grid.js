@@ -286,8 +286,9 @@ export function Calendario(props) {
     console.log(data.length);
     //alert(data.length);
 
-    for(let x = 0; x <  data.length; x++ ) {
-      const element = data[x];
+    for(let array_size = 0; array_size <  data.length; array_size++ ) {
+      console.log("array_size " + array_size);
+      const element = data[array_size];
       const diaApiAtual = new Date(element["dia"]);
 
       const pos = getByDate(diaApiAtual);
@@ -295,7 +296,7 @@ export function Calendario(props) {
       console.log("DIA ATUAL API: ", diaApiAtual, " pos:" , pos);
       //console.log("days: " , days);
 
-      if(pos == -1) return;
+      //if(pos == -1) return;
 
       marked = [...days[pos].hoursMarked];
 
