@@ -24,6 +24,8 @@ export function Calendario(props) {
   const setCadastrar = props["setCadastrar"];
 
   logo = require("../../../assets/logo.png");
+const setaEsquerda = require("../../../assets/seta-esquerda.png");
+const setaDireita = require("../../../assets/seta-direita.png");
 
   const [days, setDays] = useState([]);
   const [hours, setHours] = useState([]);
@@ -33,9 +35,6 @@ export function Calendario(props) {
   const [renderViews, setRenderViews] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isGettingApiDays, setIsGettingApiDays] = useState(false);
-
-  const setaEsquerda = require("../../../assets/seta-esquerda.png");
-  const setaDireita = require("../../../assets/seta-direita.png");
 
   const generateHours = React.useCallback(() => {
     const startTime = 7 * 60;
@@ -71,19 +70,19 @@ export function Calendario(props) {
 
     if (hours.length <= 0) return;
 
-    let cur = from;
-    let to = till;
+    let cur = moment(from);
+    let to = moment(till);
     const newDays = [];
 
     do {
-      if (cur.getDay() == 0) {
-        cur = moment(cur).add(1, "days").toDate();
-        to = moment(to).add(1, "days").toDate();
+      if (cur.day() == 0) {
+        cur = cur.add(1, "days");
+        to = to.add(1, "days");
         continue;
       }
 
       let newDay = {
-        date: cur,
+        date: cur.toDate(),
         hoursMarked: [],
       };
 
@@ -93,8 +92,8 @@ export function Calendario(props) {
 
       newDays.push(newDay);
 
-      cur = moment(cur).add(1, "days").toDate();
-    } while (cur.getDate() !== to.getDate());
+      cur = cur.add(1, "days");
+    } while (cur.date() !== to.date());
 
     setDays(newDays);
   }, [hours, till]);
@@ -122,8 +121,8 @@ export function Calendario(props) {
   );
 
   const renderDays = React.useCallback(() => {
-    let cur = from;
-    let to = till;
+    let cur = moment(from);
+    let to = moment(till);
 
     const views = [];
     const daysViews = [];
@@ -155,8 +154,8 @@ export function Calendario(props) {
       );
       i++;
 
-      cur = moment(cur).add(1, "days").toDate();
-    } while (cur.getDate() !== to.getDate());
+      cur = cur.add(1, "days");
+    } while (cur.date() !== to.date());
 
     setRenderViews( {
       views: views,
@@ -211,16 +210,16 @@ export function Calendario(props) {
 
   const getByDate = React.useCallback((date) => {
     for (let i = 0; i < days.length; i++) {
-      if (days[i].date.getDate() == date.getDate()) return i;
+      if (moment(days[i].date).date() == moment(date).date()) return i;
     }
 
     return -1;
   }, [days]);
 
   const formatDate = (date) => {
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
+    var day = moment(date).date();
+    var month = moment(date).month() + 1;
+    var year = moment(date).year();
     return `${day}/${month}/${year}`;
   };
 
@@ -254,20 +253,14 @@ export function Calendario(props) {
 
     console.log("here: " + day);
 
-    console.log("Is time between: ", day.getDate());
+    console.log("Is time between: ", moment(day).date());
     console.log("Is time between: ", target);
 
-    const startDate = new Date(day.getDate());
-    startDate.setHours(startH);
-    startDate.setMinutes(startM);
+    const startDate = moment(day).hours(startH).minutes(startM);
 
-    const targetDate = new Date(day.getDate());
-    targetDate.setHours(target.split(":")[0]);
-    targetDate.setMinutes(target.split(":")[1]);
+    const targetDate = moment(day).hours(target.split(":")[0]).minutes(target.split(":")[1]);
 
-    const endDate = new Date(day.getDate());
-    endDate.setHours(endH);
-    endDate.setMinutes(endM);
+    const endDate = moment(day).hours(endH).minutes(endM);
 
     return startDate <= targetDate && targetDate <= endDate;
   };
@@ -292,7 +285,7 @@ export function Calendario(props) {
     for(let array_size = 0; array_size <  data.length; array_size++ ) {
       console.log("array_size " + array_size);
       const element = data[array_size];
-      const diaApiAtual = new Date(element["dia"]);
+      const diaApiAtual = moment(element["dia"]);
 
       const pos = getByDate(diaApiAtual);
 
