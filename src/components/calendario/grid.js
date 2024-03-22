@@ -251,6 +251,10 @@ export function Calendario(props) {
   }, [days, isGettingApiDays]);
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
+
+    console.log("Is time between: ", day.getDate());
+    console.log("Is time between: ", target);
+
     const startDate = new Date(day.getDate());
     startDate.setHours(startH);
     startDate.setMinutes(startM);
