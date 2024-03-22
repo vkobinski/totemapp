@@ -296,7 +296,7 @@ export function Calendario(props) {
       console.log("DIA ATUAL API: ", diaApiAtual, " pos:" , pos);
       //console.log("days: " , days);
 
-      //if(pos == -1) return;
+      if(pos == -1) return;
 
       marked = [...days[pos].hoursMarked];
 
