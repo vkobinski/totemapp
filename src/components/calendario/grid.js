@@ -283,13 +283,12 @@ export function Calendario(props) {
   const processApiDays = React.useCallback((data) => {
     let newDays = getAllMarkedFalse();
     
-    console.log(data);
+    console.log(data.length);
     //alert(data.length);
 
     for(let x = 0; x <  data.length; x++ ) {
       const element = data[x];
       const diaApiAtual = new Date(element["dia"]);
-
 
       const pos = getByDate(diaApiAtual);
 
