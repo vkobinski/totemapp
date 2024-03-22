@@ -251,24 +251,26 @@ export function Calendario(props) {
   }, [days, isGettingApiDays]);
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
-    // Ensure consistent timezone handling
-    const timezoneOffset = day.getTimezoneOffset();
-    const dayInTimezone = new Date(day.getTime() + timezoneOffset * 60000);
 
-    const startDate = new Date(dayInTimezone);
+    console.log("here: iii");
+
+    console.log("Is time between: ", day.getDate());
+    console.log("Is time between: ", target);
+
+    const startDate = new Date(day.getDate());
     startDate.setHours(startH);
     startDate.setMinutes(startM);
 
-    const targetDate = new Date(dayInTimezone);
+    const targetDate = new Date(day.getDate());
     targetDate.setHours(target.split(":")[0]);
     targetDate.setMinutes(target.split(":")[1]);
 
-    const endDate = new Date(dayInTimezone);
+    const endDate = new Date(day.getDate());
     endDate.setHours(endH);
     endDate.setMinutes(endM);
 
     return startDate <= targetDate && targetDate <= endDate;
-};
+  };
 
   const getAllMarkedFalse = React.useCallback(() => {
     const marked = [...days[0].hoursMarked];
