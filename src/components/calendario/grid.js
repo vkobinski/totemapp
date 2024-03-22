@@ -287,8 +287,10 @@ export function Calendario(props) {
     //alert(data.length);
 
     data.forEach((element) => {
-      alert(element["dia"]);
       const diaApiAtual = new Date(element["dia"]);
+
+      console.log("DIA ATUAL API: ", diaApiAtual);
+
       const pos = getByDate(diaApiAtual);
 
       if(pos == -1) return;
