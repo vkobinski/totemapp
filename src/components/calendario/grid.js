@@ -252,7 +252,7 @@ export function Calendario(props) {
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
 
-    console.log("here: iii");
+    console.log("here: " + day);
 
     console.log("Is time between: ", day.getDate());
     console.log("Is time between: ", target);
