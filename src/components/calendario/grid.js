@@ -293,6 +293,7 @@ export function Calendario(props) {
       const pos = getByDate(diaApiAtual);
 
       console.log("DIA ATUAL API: ", diaApiAtual, " pos:" , pos);
+      console.log("days: " , days);
 
       if(pos == -1) return;
 
