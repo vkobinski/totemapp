@@ -285,7 +285,7 @@ export function Calendario(props) {
     
     console.log(data.length);
     console.log("days: " , days);
-    //alert(data.length);
+    console.log("data: " , data);
 
     for(let array_size = 0; array_size <  data.length; array_size++ ) {
       console.log("array_size " + array_size);
