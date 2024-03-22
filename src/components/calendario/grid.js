@@ -298,7 +298,8 @@ export function Calendario(props) {
 
       if(pos == -1) continue;
 
-      marked = [...days[pos].hoursMarked];
+      const marked = [...days[pos].hoursMarked];
+      console.log("MARKED: " + marked.length + " pos " + pos);
 
       for (let i = 0; i < marked.length; i++) {
         const execute =  isTimeBetween(
