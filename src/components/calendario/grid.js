@@ -293,22 +293,23 @@ export function Calendario(props) {
       const pos = getByDate(diaApiAtual);
 
       console.log("DIA ATUAL API: ", diaApiAtual, " pos:" , pos);
-      console.log("days: " , days);
+      //console.log("days: " , days);
 
       if(pos == -1) return;
 
       marked = [...days[pos].hoursMarked];
 
       for (let i = 0; i < marked.length; i++) {
-        if (
-          isTimeBetween(
+        const execute =  isTimeBetween(
             element["horaInicio"],
             element["minutoInicio"],
             element["horaFim"],
             element["minutoFim"],
             hours[i],
             diaApiAtual
-          )
+          );
+        if (
+          execute
         ) {
           if (element["atendimento"]) marked[i] = "atendimento";
           else marked[i] = true;
