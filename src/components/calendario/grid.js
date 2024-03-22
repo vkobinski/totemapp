@@ -251,10 +251,6 @@ const setaDireita = require("../../../assets/seta-direita.png");
 
   const isTimeBetween = (startH, startM, endH, endM, target, day) => {
 
-    console.log("here: " + day);
-
-    console.log("Is time between: ", moment(day).date());
-    console.log("Is time between: ", target);
 
     const startDate = moment(day).hours(startH).minutes(startM);
 
@@ -278,23 +274,16 @@ const setaDireita = require("../../../assets/seta-direita.png");
   const processApiDays = React.useCallback((data) => {
     let newDays = getAllMarkedFalse();
     
-    console.log(data.length);
-    console.log("days: " , days);
-    console.log("data: " , data);
-
     for(let array_size = 0; array_size <  data.length; array_size++ ) {
-      console.log("array_size " + array_size);
       const element = data[array_size];
       const diaApiAtual = moment(element["dia"]);
 
       const pos = getByDate(diaApiAtual);
 
-      console.log("DIA ATUAL API: ", diaApiAtual, " pos:" , pos);
 
       if(pos == -1) continue;
 
       const marked = [...days[pos].hoursMarked];
-      console.log("MARKED: " + marked.length + " pos " + pos);
 
       for (let i = 0; i < marked.length; i++) {
         const execute = isTimeBetween(
