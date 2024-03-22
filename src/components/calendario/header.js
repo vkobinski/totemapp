@@ -28,9 +28,13 @@ export function DayHeader(props) {
     setDayIndex(item.dayIndex);
     setDayString(item.day.date.toDateString());
 
-    setDiaArray(dayString.split(" "));
 
   }, []);
+
+  useEffect(() => {
+    setDiaArray(dayString.split(" "));
+
+  }, [dayString]);
 
   useEffect(() => {
     setDiaAtual(`${diaArray[2]} de ${getMonth(diaArray[1])}`);
