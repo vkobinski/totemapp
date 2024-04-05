@@ -21,6 +21,7 @@
     "@rneui/themed": "^4.0.0-rc.7",
     "axios": "^1.4.0",
     "expo": "~48.0.21",
+    "expo-app-loading": "^2.1.1",
     "expo-blur": "~12.2.2",
     "expo-build-properties": "^0.6.0",
     "expo-constants": "~14.2.1",
