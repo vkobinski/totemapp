@@ -1,69 +1,67 @@
 {
-  "expo": {
-    "name": "Up Consultórios",
-    "slug": "totem",
-    "version": "1.1.2",
-    "orientation": "portrait",
-    "icon": "./assets/icone.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/icone.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.kodev.uptotem",
-      "buildNumber": "60",
-      "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true
-        },
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "googleServicesFile": "./google-services.json",
-      "softwareKeyboardLayoutMode": "pan",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/icone.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.kodev.uptotem"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      [
-        "@evennit/notifee-expo-plugin",
-        {
-          "iosDeploymentTarget": "15.1",
-          "apsEnvMode": "production"
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "usesCleartextTraffic": true
-          },
-          "ios": {
-            "deploymentTarget": "15.1"
-          }
-        }
-      ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "6fac23d5-f2e5-43b9-902b-5f5bdfaf7f38"
-      }
-    }
-  },
-  "name": "totem"
+	"expo": {
+		"name": "Up Consultórios",
+		"slug": "totem",
+		"version": "1.1.2",
+		"orientation": "portrait",
+		"icon": "./assets/icone.png",
+		"userInterfaceStyle": "light",
+		"splash": {
+			"image": "./assets/icone.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#ffffff"
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"supportsTablet": true,
+			"bundleIdentifier": "com.kodev.uptotem",
+			"buildNumber": "61",
+			"infoPlist": {
+				"NSAppTransportSecurity": {
+					"NSAllowsArbitraryLoads": true
+				},
+				"ITSAppUsesNonExemptEncryption": false
+			}
+		},
+		"android": {
+			"googleServicesFile": "./google-services.json",
+			"softwareKeyboardLayoutMode": "pan",
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/icone.png",
+				"backgroundColor": "#ffffff"
+			},
+			"package": "com.kodev.uptotem"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"plugins": [
+			[
+				"@evennit/notifee-expo-plugin",
+				{
+					"iosDeploymentTarget": "15.1",
+					"apsEnvMode": "production"
+				}
+			],
+			[
+				"expo-build-properties",
+				{
+					"android": {
+						"compileSdkVersion": 35,
+						"targetSdkVersion": 35,
+						"usesCleartextTraffic": true
+					},
+					"ios": {
+						"deploymentTarget": "15.1"
+					}
+				}
+			]
+		],
+		"extra": {
+			"eas": {
+				"projectId": "6fac23d5-f2e5-43b9-902b-5f5bdfaf7f38"
+			}
+		}
+	},
+	"name": "totem"
 }
